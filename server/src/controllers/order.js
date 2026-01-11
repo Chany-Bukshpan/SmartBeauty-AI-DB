@@ -1,6 +1,6 @@
 import  orderSchema from '../models/order.js';
 
-//Get all orders from the database - מנהל בלבד
+//Get all orders from the database
 export const getAllOrders = async (req, res) => { 
     try {
         // 1. Get all orders from the collection
@@ -13,8 +13,8 @@ export const getAllOrders = async (req, res) => {
     }
 };
 
-//Update order status to 'shipped' -Admin only
-export const updateOrder=async  (req, res) => {
+//Update order status to 'shipped'
+export const updateOrder=async (req, res) => {
     try{
    const orderId=req.params.id;
    // 1. Find the order and set 'isShipped' to true
@@ -30,12 +30,12 @@ export const updateOrder=async  (req, res) => {
 res.status(500).json({ title: "Error updating order", message: err.message });
 }};
 
-//Get all orders for the logged-in user-User only
+//Get all orders
 export const getallOrdersFromUser=async (req, res) => {
      try {
-        // 1. Find all orders that belong to the current user's ID
-       const orders=await orderSchema.find({userId:req.user.id});
-       // 2. Send the user's orders back
+        // 1. Find all orders from the database
+       const orders=await orderSchema.find();
+       // 2. Send the orders back
        res.json(orders);
     } catch (err) {
         // 3. Handle errors if the search fails
@@ -43,7 +43,7 @@ export const getallOrdersFromUser=async (req, res) => {
     }
 };
 
-//Create and save a new order-User only.
+//Create and save a new order
 export const addOrder=async (req, res) => {
      try {
        const{address, orderdProducts}=req.body;
@@ -58,7 +58,7 @@ export const addOrder=async (req, res) => {
         address: address,
         code: Math.random().toString(36).substring(7).toUpperCase(),
         orderdProducts: orderdProducts,
-        userId: req.user.id//Link order to the logged-in user
+        userId: null
        });
        // 3. Save the order to the database
        const savedOrder = await newOrder.save();
@@ -69,7 +69,7 @@ export const addOrder=async (req, res) => {
     }
 };
 
-//Delete an order if it has not been shipped-Admin only.
+//Delete an order if it has not been shipped
 export const deleteOrder=async (req, res) => {
    try {
     const orderId=req.params.id;

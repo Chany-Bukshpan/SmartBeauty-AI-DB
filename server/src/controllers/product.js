@@ -52,7 +52,7 @@ export const getProductById = async (req, res) => {
     }
 };
 
-// Add new product - Admin only
+// Add new product
 export const addProduct = async (req, res) => {
     try {
         const { makeupName, brand, category, description, imageUrl, price, inStock } = req.body;
@@ -84,7 +84,7 @@ export const addProduct = async (req, res) => {
     }
 };
 
-// Update product - Admin only
+// Update product
 export const updateProduct = async (req, res) => {
     try {
         const productId = req.params.id;
@@ -110,7 +110,7 @@ export const updateProduct = async (req, res) => {
     }
 };
 
-// Delete product - Admin only
+// Delete product
 export const deleteById = async (req, res) => {
     try {
         const id = req.params.id;

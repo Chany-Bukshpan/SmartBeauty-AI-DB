@@ -54,19 +54,12 @@ export const loginUser = async (req, res) => {
     }
 };
 
-//Get current logged in user details
+//Get all users
 export const getCurrentUser = async (req, res) => {
     try {
-        // Get user from database
-        const user = await userModel.findById(req.user.id).select("-password");
-        if (!user) {
-            return res.status(404).json({ 
-                title: "User not found", 
-                message: "User not found" 
-            });
-        }
-        // Return user details
-        res.json(user);
+        // Get all users from the database
+        const users = await userModel.find().select("-password");
+        res.json(users);
     } catch (err) {
         // Handle database or server errors
         res.status(500).json({ 
@@ -76,7 +69,7 @@ export const getCurrentUser = async (req, res) => {
     }
 };
 
-//Retrieving all users only by the admin.
+//Retrieving all users
 export const getAllUsers = async (req, res) => {
     try {
         // Fetch all users while excluding passwords for security
