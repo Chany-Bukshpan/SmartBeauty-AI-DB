@@ -2,9 +2,9 @@ services:
   - type: web
     name: makeup-store-api
     env: node
-    rootDir: server
-    buildCommand: npm install
-    startCommand: npm start
+    rootDir: server/src
+    buildCommand: cd .. && npm install
+    startCommand: cd .. && npm start
     envVars:
       - key: DB_URI
         sync: false
