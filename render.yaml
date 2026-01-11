@@ -2,7 +2,7 @@ services:
   - type: web
     name: makeup-store-api
     env: node
-    rootDir: src
+    rootDir: server
     buildCommand: npm install
     startCommand: npm start
     envVars:
