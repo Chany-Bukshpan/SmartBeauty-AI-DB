@@ -44,29 +44,31 @@ export const getallOrdersFromUser=async (req, res) => {
 };
 
 //Create and save a new order
-export const addOrder=async (req, res) => {
-     try {
-       const{address, orderdProducts}=req.body;
-       // 1. Validation: Check if the order has products
-       if(!orderdProducts||orderdProducts.length===0){
-        return res.status(400).json({ title: "Missing details", message: "Order products are required" });
-       }
-       // 2. Create new order object with dates and unique code
-       const newOrder=new orderSchema({
-        orderDate: new Date(),
-        deadLine: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-        address: address,
-        code: Math.random().toString(36).substring(7).toUpperCase(),
-        orderdProducts: orderdProducts,
-        userId: null
-       });
-       // 3. Save the order to the database
-       const savedOrder = await newOrder.save();
-       res.status(201).json(savedOrder);
-    } catch (err) {
-        // 4. Handle errors during order creation
-        res.status(500).json({ title: "Error creating order", message: err.message });
+export const addOrder = async (req, res) => {
+  try {
+    const { address, orderedProducts, userId } = req.body;
+    if (!orderedProducts || orderedProducts.length === 0) {
+      return res.status(400).json({
+        title: "Missing details",
+        message: "Order products are required"
+      });
     }
+    const newOrder = new orderSchema({
+      orderDate: new Date(),
+      deadLine: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      address,
+      code: Math.random().toString(36).substring(7).toUpperCase(),
+      orderedProducts,
+      userId   // ✅ לא null
+    });
+    const savedOrder = await newOrder.save();
+    res.status(201).json(savedOrder);
+  } catch (err) {
+    res.status(500).json({
+      title: "Error creating order",
+      message: err.message
+    });
+  }
 };
 
 //Delete an order if it has not been shipped
