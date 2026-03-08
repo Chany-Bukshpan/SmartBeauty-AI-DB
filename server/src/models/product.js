@@ -14,6 +14,7 @@ const productSchema = new mongoose.Schema({
         hex: { type: String },
         imageUrl: { type: String }
     }],
+    imageZoom: { type: Boolean, default: false },
 },
     {
         timestamps: true

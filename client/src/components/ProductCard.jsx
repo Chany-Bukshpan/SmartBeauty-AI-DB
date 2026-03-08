@@ -38,38 +38,40 @@ export const ProductCard = ({ product }) => {
 
     return (
         <div className="product-card">
-            {useRecolor ? (
-                <RecoloredProductImage src={displayImage} alt={product.makeupName || product.name} targetHex={selectedColorHex} className="product-card-recolored-img" />
-            ) : (
-                <img src={displayImage} alt={product.makeupName || product.name} />
-            )}
-            <h3>{product.makeupName || product.name}</h3>
-            {product.colors && product.colors.length > 0 && (
-                <ColorSwatches
-                    colors={product.colors}
-                    selectedIndex={selectedColorIndex}
-                    onSelect={setSelectedColorIndex}
-                    compact
-                />
-            )}
-            <p className="brand"><strong>מותג:</strong> {product.brand}</p>
-            <strong className="price">מחיר: ₪{product.price}</strong>
-            
-            <div className="qty-controls">
-                <Button 
-                    icon="pi pi-plus" 
-                    className="p-button-rounded p-button-sm" 
-                    onClick={increaseQuantity}
-                />
-                <span>{quantity}</span>
-                <Button 
-                    icon="pi pi-minus" 
-                    className="p-button-rounded p-button-sm" 
-                    onClick={decreaseQuantity}
-                    disabled={quantity <= 0}
-                />
+            <div className="product-card-image-wrap">
+                {useRecolor ? (
+                    <RecoloredProductImage src={displayImage} alt={product.makeupName || product.name} targetHex={selectedColorHex} className="product-card-recolored-img" />
+                ) : (
+                    <img src={displayImage} alt={product.makeupName || product.name} />
+                )}
             </div>
-
+            <div className="product-card-body">
+                <h3>{product.makeupName || product.name}</h3>
+                {product.colors && product.colors.length > 0 && (
+                    <ColorSwatches
+                        colors={product.colors}
+                        selectedIndex={selectedColorIndex}
+                        onSelect={setSelectedColorIndex}
+                        compact
+                    />
+                )}
+                <p className="brand"><strong>מותג:</strong> {product.brand}</p>
+                <strong className="price">מחיר: ₪{product.price}</strong>
+                <div className="qty-controls">
+                    <Button 
+                        icon="pi pi-plus" 
+                        className="p-button-rounded p-button-sm" 
+                        onClick={increaseQuantity}
+                    />
+                    <span>{quantity}</span>
+                    <Button 
+                        icon="pi pi-minus" 
+                        className="p-button-rounded p-button-sm" 
+                        onClick={decreaseQuantity}
+                        disabled={quantity <= 0}
+                    />
+                </div>
+            </div>
             <div className="product-actions">
                 <Link to={`/product/${product._id || product.id}`} style={{ textDecoration: 'none' }}>
                     <Button label="לפרטים נוספים" icon="pi pi-info-circle" className="btn-details" />

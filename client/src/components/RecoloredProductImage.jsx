@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { recolorLipstickInImageData } from "../utils/recolorLipstick";
 
-const MAX_SIZE = 420;
+const SIZE = 400;
 
 /**
  * מציג תמונת מוצר; כש-targetHex מוגדר, צובע מחדש רק את אזורי האודם (עיגול + פס) דרך Canvas.
+ * הקנבס תמיד ריבוע (cover, יישור מלמעלה) כדי שלא יופיע "חצי ריבוע" אחרי הריקולור.
  */
 export function RecoloredProductImage({ src, alt, targetHex, className }) {
   const [recolored, setRecolored] = useState(false);
@@ -32,30 +33,26 @@ export function RecoloredProductImage({ src, alt, targetHex, className }) {
     const img = imgRef.current;
     if (!img.naturalWidth) return;
 
-    let w = img.naturalWidth;
-    let h = img.naturalHeight;
-    const scale = w > h ? MAX_SIZE / w : MAX_SIZE / h;
-    if (scale >= 1) {
-      w = img.naturalWidth;
-      h = img.naturalHeight;
-    } else {
-      w = Math.round(img.naturalWidth * scale);
-      h = Math.round(img.naturalHeight * scale);
-    }
+    const w = img.naturalWidth;
+    const h = img.naturalHeight;
+    // ריבוע עם cover — התמונה ממלאת את הריבוע, יישור מלמעלה (כדי לחתוך ריק)
+    const scale = Math.max(SIZE / w, SIZE / h);
+    const drawW = w * scale;
+    const drawH = h * scale;
+    const xOff = (SIZE - drawW) / 2;
+    const yOff = 0;
 
     const canvas = canvasRef.current;
-    canvas.width = w;
-    canvas.height = h;
+    canvas.width = SIZE;
+    canvas.height = SIZE;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     try {
-      ctx.drawImage(img, 0, 0, w, h);
-      const imageData = ctx.getImageData(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h, xOff, yOff, drawW, drawH);
+      const imageData = ctx.getImageData(0, 0, SIZE, SIZE);
       recolorLipstickInImageData(imageData, targetHex);
       ctx.putImageData(imageData, 0, 0);
-      canvas.style.aspectRatio = `${w}/${h}`;
-      canvas.style.maxWidth = "100%";
       setRecolored(true);
     } catch (e) {
       setFallback(true);
@@ -75,7 +72,6 @@ export function RecoloredProductImage({ src, alt, targetHex, className }) {
           position: showCanvas ? "absolute" : undefined,
           visibility: showCanvas ? "hidden" : undefined,
           width: showCanvas ? undefined : "100%",
-          maxWidth: showCanvas ? undefined : MAX_SIZE,
         }}
         crossOrigin="anonymous"
         onLoad={() => setImageLoaded(true)}
@@ -85,8 +81,6 @@ export function RecoloredProductImage({ src, alt, targetHex, className }) {
         className={className}
         style={{
           display: showCanvas ? "block" : "none",
-          maxWidth: "100%",
-          height: "auto",
         }}
         aria-hidden={!showCanvas}
         aria-label={showCanvas ? alt : undefined}

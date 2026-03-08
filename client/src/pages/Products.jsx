@@ -73,45 +73,48 @@ function Products() {
           const displayImage = product.colors?.[selectedIndex]?.imageUrl || product.imageUrl;
           return (
           <div key={product._id} className="product-card" style={{ animationDelay: `${index * 0.06}s` }}>
-            {useRecolor ? (
-              <RecoloredProductImage
-                src={displayImage}
-                alt={product.makeupName}
-                targetHex={selectedColorHex}
-                className="product-card-recolored-img"
-              />
-            ) : (
-              <img src={displayImage} alt={product.makeupName} />
-            )}
-            <h3>{product.makeupName}</h3>
-            {product.colors && product.colors.length > 0 && (
-              <ColorSwatches
-                colors={product.colors}
-                selectedIndex={selectedIndex}
-                onSelect={(i) => setSelectedColorByProduct(prev => ({ ...prev, [product._id]: i }))}
-                compact
-              />
-            )}
-            <p className="brand">{product.brand}</p>
-            <p className="price">₪{product.price}</p>
-            <p className={product.inStock ? 'in-stock' : 'out-of-stock'}>
-              {product.inStock ? 'במלאי' : 'לא במלאי'}
-            </p>
-            <div className="qty-controls">
-              <Button 
-                icon="pi pi-plus" 
-                className="p-button-rounded p-button-sm" 
-                onClick={() => increaseQuantity(product._id)}
-              />
-              <span>{quantities[product._id] || 0}</span>
-              <Button 
-                icon="pi pi-minus" 
-                className="p-button-rounded p-button-sm" 
-                onClick={() => decreaseQuantity(product._id)}
-                disabled={(quantities[product._id] || 0) <= 0}
-              />
+            <div className="product-card-image-wrap">
+              {useRecolor ? (
+                <RecoloredProductImage
+                  src={displayImage}
+                  alt={product.makeupName}
+                  targetHex={selectedColorHex}
+                  className="product-card-recolored-img"
+                />
+              ) : (
+                <img src={displayImage} alt={product.makeupName} />
+              )}
             </div>
-
+            <div className="product-card-body">
+              <h3>{product.makeupName}</h3>
+              {product.colors && product.colors.length > 0 && (
+                <ColorSwatches
+                  colors={product.colors}
+                  selectedIndex={selectedIndex}
+                  onSelect={(i) => setSelectedColorByProduct(prev => ({ ...prev, [product._id]: i }))}
+                  compact
+                />
+              )}
+              <p className="brand">{product.brand}</p>
+              <p className="price">₪{product.price}</p>
+              <p className={product.inStock ? 'in-stock' : 'out-of-stock'}>
+                {product.inStock ? 'במלאי' : 'לא במלאי'}
+              </p>
+              <div className="qty-controls">
+                <Button 
+                  icon="pi pi-plus" 
+                  className="p-button-rounded p-button-sm" 
+                  onClick={() => increaseQuantity(product._id)}
+                />
+                <span>{quantities[product._id] || 0}</span>
+                <Button 
+                  icon="pi pi-minus" 
+                  className="p-button-rounded p-button-sm" 
+                  onClick={() => decreaseQuantity(product._id)}
+                  disabled={(quantities[product._id] || 0) <= 0}
+                />
+              </div>
+            </div>
             <div className="product-actions">
               <Link to={`/product/${product._id}`} style={{ textDecoration: 'none' }}>
                 <Button 
