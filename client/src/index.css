@@ -1,15 +1,280 @@
+/* פלטת צבעים יוקרתית + צבע הדגשה */
+:root {
+  --primary: #A26769;
+  --primary-dark: #8a5658;
+  --secondary: #BFA5A0;
+  --light: #ECD9C6;
+  --light-bg: #f5efe8;
+  --text-dark: #5c4547;
+  --text-muted: #7d6b6d;
+  --accent: #c4a77d;
+  --accent-soft: rgba(196, 167, 125, 0.25);
+  --shadow: 0 2px 12px rgba(162, 103, 105, 0.12);
+  --shadow-hover: 0 6px 24px rgba(162, 103, 105, 0.18);
+  --radius: 10px;
+  --radius-sm: 6px;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+  direction: rtl;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  direction: rtl;
+  text-align: right;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f5f5f5;
+  background: var(--light);
+  color: var(--text-dark);
+  line-height: 1.6;
+  position: relative;
+}
+
+/* כפתורים עגולים (פלוס/מינוס) — האייקון במרכז העיגול */
+.p-button-rounded.p-button-sm .p-button-label,
+.cart-qty-btn .p-button-label,
+.product-details-qty-btn .p-button-label,
+.admin-btn-edit .p-button-label,
+.admin-btn-delete .p-button-label {
+  width: 0 !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-width: 0 !important;
+}
+.p-button-rounded.p-button-sm .p-button-icon,
+.cart-qty-btn .p-button-icon,
+.product-details-qty-btn .p-button-icon,
+.admin-btn-edit .p-button-icon,
+.admin-btn-delete .p-button-icon {
+  margin: 0 !important;
+  margin-inline-start: 0 !important;
+  margin-inline-end: 0 !important;
+  flex-shrink: 0;
+}
+.p-button-rounded.p-button-sm,
+.cart-qty-btn,
+.product-details-qty-btn,
+.admin-btn-edit,
+.admin-btn-delete {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  direction: ltr !important; /* כיוון קבוע כדי ש־center יהיה אכן במרכז */
+}
+
+/* כפתורים מקוריים (submit) — גיבוי עיצוב אחיד עם האתר */
+input[type="submit"] {
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  transition: all 0.25s var(--ease-out-expo);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  border: none;
+  color: var(--light);
+  padding: 0.75rem 1.25rem;
+  cursor: pointer;
+}
+input[type="submit"]:hover {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* טקסטורת גרעין עדינה — עומק ויוקרה */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.025;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ========== אנימציות גלובליות ========== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes lineExpand {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes floatSlow {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(8px, -12px) scale(1.02); }
+  66% { transform: translate(-6px, 6px) scale(0.98); }
+}
+
+@keyframes bounceDown {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+@keyframes shine {
+  0% { background-position: -120% 0; }
+  100% { background-position: 220% 0; }
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* טקסט גרדיאנט יוקרתי */
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 50%, var(--primary-dark) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* מעבר דפים */
+.page-enter {
+  animation: fadeIn 0.5s var(--ease-out-expo) forwards;
+}
+
+.page-enter .section-title,
+.page-enter .hero-title {
+  animation: slideUp 0.7s var(--ease-out-expo) 0.15s both;
+}
+
+.page-enter .hero-tagline {
+  animation: slideUp 0.7s var(--ease-out-expo) 0.3s both;
+}
+
+/* כותרות עם קו דקורטיבי */
+.section-title {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 0.5rem;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--accent), var(--primary), transparent);
+  border-radius: 2px;
+  animation: lineExpand 0.8s var(--ease-out-expo) 0.3s both;
+}
+
+.section-tagline {
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  letter-spacing: 0.02em;
+}
+
+/* כפתורים גלובליים */
+button.p-button,
+input[type="submit"],
+input[type="button"] {
+  --p-button-bg: var(--primary) !important;
+  --p-button-hover-bg: var(--primary-dark) !important;
+  --p-button-border-color: var(--primary) !important;
+}
+
+.p-card {
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow) !important;
+  border: 1px solid var(--secondary) !important;
+}
+
+.p-card .p-card-title {
+  color: var(--primary) !important;
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+  background: var(--secondary) !important;
+  color: var(--text-dark) !important;
+  border-color: var(--secondary) !important;
+}
+
+.p-datatable .p-datatable-tbody > tr:hover {
+  background: var(--light-bg) !important;
+}
+
+.p-inputtext:enabled:focus,
+.p-inputnumber-input:enabled:focus {
+  box-shadow: 0 0 0 2px var(--secondary) !important;
+  border-color: var(--primary) !important;
+}
+
+.p-badge.p-badge-danger {
+  background: var(--primary) !important;
 }

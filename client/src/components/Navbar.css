@@ -1,61 +1,128 @@
 .navbar {
-  background-color: #282c34;
-  padding: 1rem 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.navbar-container {
-  max-width: 1200px;
-  margin: 0 auto;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--primary);
+  padding: 1rem 2rem;
+  box-shadow: var(--shadow);
+  direction: rtl;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 2rem;
+  transition: box-shadow 0.35s var(--ease-out-expo), background 0.35s;
 }
 
-.navbar-logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #61dafb;
-  text-decoration: none;
+.navbar--scrolled {
+  box-shadow: 0 4px 24px rgba(162, 103, 105, 0.25);
+}
+
+.navbar--scrolled::after {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+.navbar::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), var(--light), var(--accent), transparent);
+  transform: scaleX(0);
+  opacity: 0;
+  transition: transform 0.4s var(--ease-out-expo), opacity 0.4s;
+}
+
+.navbar h1 {
+  color: var(--light);
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.navbar input[type="button"] {
+  background: var(--light);
+  color: var(--primary);
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 600;
+  margin-inline-start: 10px;
+  transition: all 0.25s var(--ease-out-expo);
+}
+
+.navbar input[type="button"]:hover {
+  background: var(--secondary);
+  color: var(--text-dark);
+  transform: translateY(-1px);
 }
 
 .navbar-menu {
   display: flex;
   list-style: none;
-  gap: 2rem;
+  gap: 1.5rem;
   margin: 0;
   padding: 0;
   align-items: center;
 }
 
-.navbar-link {
-  color: white;
+.navbar-menu li {
+  margin: 0;
+}
+
+.navbar-menu a {
+  color: var(--light);
   text-decoration: none;
-  transition: color 0.3s;
-}
-
-.navbar-link:hover {
-  color: #61dafb;
-}
-
-.navbar-user {
-  color: #61dafb;
   font-weight: 500;
+  position: relative;
+  padding: 0.25rem 0;
+  transition: color 0.25s ease;
 }
 
-.navbar-button {
-  background-color: #61dafb;
-  color: #282c34;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.3s;
+.navbar-menu a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 0;
+  height: 2px;
+  background: var(--accent);
+  transition: width 0.35s var(--ease-out-expo);
 }
 
-.navbar-button:hover {
-  background-color: #4fa8c5;
+.navbar-menu a:hover {
+  color: var(--light);
 }
 
+.navbar-menu a:hover::after {
+  width: 100%;
+  left: 0;
+  right: auto;
+}
+
+.compact-cart-container .p-button {
+  color: var(--light) !important;
+  transition: transform 0.25s ease, background 0.25s !important;
+}
+
+.compact-cart-container .p-button:hover {
+  background: rgba(236, 217, 198, 0.2) !important;
+  color: var(--light) !important;
+  transform: scale(1.08);
+}
+
+.cart-icon-wrapper.cart-bump {
+  animation: cartBump 0.5s var(--ease-out-expo);
+}
+
+@keyframes cartBump {
+  0%, 100% { transform: scale(1); }
+  30% { transform: scale(1.2); }
+  60% { transform: scale(0.95); }
+}
+
+.cart-info span {
+  color: var(--light);
+}

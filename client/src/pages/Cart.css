@@ -1,0 +1,180 @@
+.cart-page {
+  padding: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.cart-page-head {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.cart-page .section-title {
+  color: var(--primary);
+  margin-bottom: 0;
+  font-size: 1.85rem;
+}
+
+.cart-page .section-tagline {
+  margin-top: 0.5rem;
+}
+
+.cart-page .p-card {
+  background: var(--light-bg) !important;
+  border: 1px solid var(--secondary) !important;
+  animation: slideUp 0.5s var(--ease-out-expo) 0.1s both;
+}
+
+.cart-page .p-card .p-card-title {
+  color: var(--primary) !important;
+}
+
+.cart-page .cart-card .p-card-body {
+  padding: 1.5rem;
+}
+
+.cart-page .cart-table.p-datatable .p-datatable-thead > tr > th {
+  background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%) !important;
+  color: var(--light) !important;
+  border: none !important;
+  font-weight: 600;
+  padding: 1rem;
+  padding-inline-end: 1.25rem;
+  text-align: right;
+}
+
+.cart-page .cart-table.p-datatable .p-datatable-tbody > tr > td {
+  padding: 1rem;
+  padding-inline-end: 1.25rem; /* הזזה ימינה כדי שיופיעו מתחת לקטגוריות */
+  border-color: rgba(191, 165, 160, 0.4) !important;
+  color: var(--text-dark);
+  text-align: right;
+}
+
+.cart-page .cart-table.p-datatable .p-datatable-tbody > tr:hover {
+  background: var(--light-bg) !important;
+}
+
+.cart-item-img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--secondary);
+}
+
+.cart-item-color {
+  display: block;
+  font-size: 0.9em;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+.cart-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.cart-qty-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 2rem !important;
+  height: 2rem !important;
+  min-width: 2rem !important;
+  padding: 0 !important;
+  background: var(--secondary) !important;
+  border-color: var(--secondary) !important;
+  color: var(--text-dark) !important;
+  transition: all 0.2s var(--ease-out-expo);
+}
+.cart-qty-btn .p-button-icon {
+  margin: 0 !important;
+  margin-inline-start: 0 !important;
+  margin-inline-end: 0 !important;
+  font-size: 0.9rem;
+}
+
+.cart-qty-btn:hover:not(:disabled) {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: var(--light) !important;
+  transform: scale(1.08);
+}
+
+.cart-qty-num {
+  min-width: 1.75rem;
+  text-align: center;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.cart-remove-btn {
+  background: rgba(162, 103, 105, 0.15) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+}
+
+.cart-remove-btn:hover {
+  background: var(--primary) !important;
+  color: var(--light) !important;
+  transform: scale(1.08);
+}
+
+.cart-total {
+  margin-top: 2rem;
+  text-align: end;
+  border-top: 2px solid var(--secondary);
+  padding-top: 1.5rem;
+}
+
+.cart-total h3 {
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 1.35rem;
+  margin-bottom: 1rem;
+}
+
+.cart-total-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.btn-cart-secondary {
+  background: var(--secondary) !important;
+  border-color: var(--secondary) !important;
+  color: var(--text-dark) !important;
+  font-weight: 600;
+  transition: all 0.25s var(--ease-out-expo);
+}
+
+.btn-cart-secondary:hover {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: var(--light) !important;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.btn-cart-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+  border: none !important;
+  color: var(--light) !important;
+  font-weight: 600;
+  transition: all 0.25s var(--ease-out-expo);
+}
+
+.btn-cart-primary:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.btn-cart-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

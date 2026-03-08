@@ -1,0 +1,35 @@
+.footer {
+  background: var(--primary);
+  color: var(--light);
+  text-align: center;
+  padding: 2rem 20px;
+  margin-top: auto;
+  direction: rtl;
+  box-shadow: 0 -4px 24px rgba(162, 103, 105, 0.2);
+  position: relative;
+  z-index: 2;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), var(--light), var(--accent), transparent);
+  opacity: 0.8;
+  border-radius: 2px;
+}
+
+.footer p {
+  margin: 0.4rem 0;
+  opacity: 0.95;
+  font-size: 0.95rem;
+}
+
+.footer p:first-of-type {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}

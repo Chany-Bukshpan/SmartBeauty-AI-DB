@@ -4,9 +4,19 @@
   margin: 0 auto;
 }
 
-.orders h1 {
-  color: #282c34;
+.orders-head {
+  text-align: center;
   margin-bottom: 2rem;
+}
+
+.orders .section-title {
+  color: var(--primary);
+  margin-bottom: 0;
+  font-size: 1.85rem;
+}
+
+.orders .section-tagline {
+  margin-top: 0.5rem;
 }
 
 .orders-list {
@@ -16,36 +26,61 @@
 }
 
 .order-card {
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  border: 1px solid var(--secondary);
+  border-radius: var(--radius);
   padding: 1.5rem;
-  background: white;
+  background: var(--light-bg);
+  box-shadow: var(--shadow);
+  transition: transform 0.3s var(--ease-out-expo), box-shadow 0.3s;
+  animation: slideUp 0.55s var(--ease-out-expo) both;
+}
+
+.order-card:nth-child(1) { animation-delay: 0.05s; }
+.order-card:nth-child(2) { animation-delay: 0.1s; }
+.order-card:nth-child(3) { animation-delay: 0.15s; }
+.order-card:nth-child(4) { animation-delay: 0.2s; }
+.order-card:nth-child(5) { animation-delay: 0.25s; }
+.order-card:nth-child(n+6) { animation-delay: 0.3s; }
+
+.order-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
 }
 
 .order-card h3 {
-  color: #282c34;
+  color: var(--primary);
   margin-bottom: 1rem;
+  font-weight: 600;
 }
 
 .order-products {
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--secondary);
 }
 
 .order-product {
   display: flex;
   justify-content: space-between;
   padding: 0.5rem 0;
+  color: var(--text-dark);
 }
 
-.loading, .error {
+.orders-empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 2rem;
+  font-size: 1.05rem;
+}
+
+.orders .loading,
+.orders .error {
   text-align: center;
   padding: 2rem;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
+  color: var(--text-muted);
 }
 
-.error {
-  color: red;
+.orders .error {
+  color: var(--primary-dark);
 }
-

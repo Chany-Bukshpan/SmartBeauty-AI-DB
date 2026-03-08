@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const API_URL = 'https://final-project-n18z.onrender.com/api/order';
 
-// Get user orders
+// פונקציה אסינכרונית לשליפת הזמנות המשתמש
 export const fetchUserOrders = createAsyncThunk(
   'orders/fetchUserOrders',
   async (token) => {
@@ -14,7 +14,7 @@ export const fetchUserOrders = createAsyncThunk(
   }
 );
 
-// Create order
+// פונקציה אסינכרונית ליצירת הזמנה חדשה
 export const createOrder = createAsyncThunk(
   'orders/createOrder',
   async ({ orderData, token }) => {
@@ -25,16 +25,30 @@ export const createOrder = createAsyncThunk(
   }
 );
 
+// יצירת slice לניהול מצב ההזמנות
 const ordersSlice = createSlice({
   name: 'orders',
   initialState: {
-    items: [],
-    loading: false,
-    error: null,
+    items: [],      // רשימת ההזמנות
+    loading: false, // מצב טעינה
+    error: null,    // שגיאות
   },
-  reducers: {},
+  reducers: {
+    // איפוס הזמנות (בהתחלף משתמש)
+    clearOrders: (state) => {
+      state.items = [];
+      state.loading = false;
+      state.error = null;
+    },
+    // שחזור הזמנות שמורות (מצב המשתמש מהפעם הקודמת)
+    setOrders: (state, action) => {
+      state.items = action.payload || [];
+    },
+  },
+  // טיפול בתוצאות של הפעולות האסינכרוניות
   extraReducers: (builder) => {
     builder
+      // טיפול בשליפת הזמנות
       .addCase(fetchUserOrders.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -47,11 +61,12 @@ const ordersSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       })
+      // טיפול ביצירת הזמנה חדשה
       .addCase(createOrder.fulfilled, (state, action) => {
         state.items.push(action.payload);
       });
   },
 });
 
+export const { clearOrders, setOrders } = ordersSlice.actions;
 export default ordersSlice.reducer;
-

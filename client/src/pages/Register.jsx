@@ -1,58 +1,73 @@
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { registerUser } from '../store/slices/usersSlice';
-import './Register.css';
+import { useForm } from "react-hook-form"
+import { SignUp } from "../api/userService"
+import { useDispatch } from "react-redux"
+import { userIn } from "../store/slices/userSlice"
+import { clearCart } from "../store/slices/cartSlice"
+import { clearOrders } from "../store/slices/ordersSlice"
+import { useNavigate } from "react-router-dom"
+import './Register.css'
 
-function Register() {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    userName: '',
-    email: '',
-    password: '',
-  });
+// דף הרשמה - טופס לרישום משתמש חדש
+export default function Register() {
+    // useForm לניהול הטופס וולידציות
+    let { register, handleSubmit, formState: { errors } } = useForm()
+    let dispatch = useDispatch()
+    let navigate = useNavigate()
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await dispatch(registerUser(formData)).unwrap();
-      navigate('/');
-    } catch (error) {
-      alert('Registration failed: ' + error);
+    // פונקציה לשמירת משתמש חדש
+    async function saveUser(data) {
+        try {
+            // שליחת בקשה לשרת לרישום
+            let res = await SignUp(data)
+            alert("הפרטים " + res.data.user.userName + " נשמרו בהצלחה")
+            dispatch(clearOrders())
+            dispatch(clearCart())
+            dispatch(userIn(res.data))
+            navigate('/')
+        }
+        catch (error) {
+            alert("תקלה בהרשמה: " + (error.response?.data?.message || error.message))
+            console.log(error)
+        }
     }
-  };
 
-  return (
-    <div className="register">
-      <h1>Register</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Username"
-          value={formData.userName}
-          onChange={(e) => setFormData({ ...formData, userName: e.target.value })}
-          required
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-          required
-        />
-        <button type="submit">Register</button>
-      </form>
-    </div>
-  );
+    return (
+        <div className="register register-enter">
+            <h1 className="section-title">הרשמה</h1>
+            <p className="section-tagline">צרו חשבון והתחילו ליהנות ממבצעים ומשלוחים</p>
+            <form className="form-register" onSubmit={handleSubmit(saveUser)}>
+                <label>שם משתמש</label>
+                <input 
+                    type="text" 
+                    {...register("userName", { 
+                        required: { value: true, message: "חובה להזין שם משתמש" } 
+                    })} 
+                />
+                {/* הצגת שגיאת ולידציה אם יש */}
+                {errors.userName && <span className="error">{errors.userName.message}</span>}
+                
+                <label>מייל</label>
+                <input 
+                    type="email" 
+                    {...register("email", { 
+                        required: { value: true, message: "חובה להזין מייל" } 
+                    })} 
+                />
+                {errors.email && <span className="error">{errors.email.message}</span>}
+                
+                <label>סיסמא</label>
+                <input 
+                    type="password" 
+                    {...register("password", { 
+                        required: { value: true, message: "חובה להזין סיסמא" },
+                        minLength: { value: 6, message: "סיסמא חייבת להכיל לפחות 6 תווים" }
+                    })} 
+                />
+                {errors.password && <span className="error">{errors.password.message}</span>}
+                
+                <input type="submit" value="הירשם" />
+            </form>
+        </div>
+    )
 }
-
-export default Register;
 

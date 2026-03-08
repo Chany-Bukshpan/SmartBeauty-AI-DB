@@ -7,4 +7,56 @@
 .main-content {
   flex: 1;
   padding: 2rem 0;
+  background: linear-gradient(180deg, var(--light) 0%, var(--light-bg) 100%);
+  min-height: 60vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* מעבר רך בין דפים */
+.page-wrap {
+  animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* כפתור חזרה למעלה */
+.back-to-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  left: auto;
+  z-index: 50;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--secondary);
+  background: var(--light-bg);
+  color: var(--primary);
+  font-size: 1.25rem;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.25s var(--ease-out-expo), box-shadow 0.25s, background 0.25s;
+}
+
+.back-to-top:hover {
+  background: var(--primary);
+  color: var(--light);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(162, 103, 105, 0.3);
+}
+
+/* הודעת "נוסף לעגלה" — בהתאם לעיצוב האתר */
+.p-toast-message-success {
+  background: var(--light-bg) !important;
+  border: 1px solid var(--secondary) !important;
+  border-right: 4px solid var(--primary) !important;
+  color: var(--text-dark) !important;
+  box-shadow: var(--shadow-hover) !important;
+  border-radius: var(--radius) !important;
+}
+.p-toast-message-success .p-toast-message-icon {
+  color: var(--primary) !important;
+}
+.p-toast .p-toast-message {
+  direction: rtl;
+  text-align: right;
 }

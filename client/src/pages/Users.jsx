@@ -1,26 +1,40 @@
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchUsers } from '../store/slices/usersSlice';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { GetAllUsers } from '../api/userService';
 import './Users.css';
 
+// דף משתמשים - מציג את כל המשתמשים (למנהל בלבד)
 function Users() {
-  const dispatch = useDispatch();
-  const { users } = useSelector((state) => state.users);
-  const { token, currentUser } = useSelector((state) => state.users);
+  const { token, currentUser } = useSelector((state) => state.user);
+  const [users, setUsers] = useState([]);
 
+  // טעינת משתמשים מהשרת כשהדף נטען
   useEffect(() => {
-    if (token && currentUser?.role === 'admin') {
-      dispatch(fetchUsers(token));
+    async function loadUsers() {
+      // טעינה רק אם המשתמש מחובר והוא מנהל
+      if (token && currentUser?.role === 'admin') {
+        try {
+          let res = await GetAllUsers();
+          setUsers(res.data);
+        } catch (error) {
+          console.error('Error loading users:', error);
+        }
+      }
     }
-  }, [dispatch, token, currentUser]);
+    loadUsers();
+  }, [token, currentUser]);
 
+  // בדיקה אם המשתמש הוא מנהל - אם לא, מציג הודעת שגיאה
   if (currentUser?.role !== 'admin') {
     return <div className="error">Access denied. Admin only.</div>;
   }
 
   return (
     <div className="users">
-      <h1>Users</h1>
+      <div className="users-head">
+        <h1 className="section-title">משתמשים</h1>
+        <p className="section-tagline">ניהול רשימת המשתמשים במערכת</p>
+      </div>
       <div className="users-list">
         {users.map((user) => (
           <div key={user._id} className="user-card">
@@ -35,4 +49,3 @@ function Users() {
 }
 
 export default Users;
-
