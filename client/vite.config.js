@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     server: {
       proxy: {
-        '/api': {
+        https://final-project-n18z.onrender.com': {
           target,
           changeOrigin: true,
         },

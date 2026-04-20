@@ -5,7 +5,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 const API_BASE = (import.meta.env.VITE_API_BASE_URL || '').trim();
-const API_URL = API_BASE ? `${API_BASE}/api/order` : '/api/order';
+const API_URL = API_BASE ? `${API_BASE}/api/order` : https://final-project-n18z.onrender.com/order';
 
 export const fetchUserOrders = createAsyncThunk(
   'orders/fetchUserOrders',

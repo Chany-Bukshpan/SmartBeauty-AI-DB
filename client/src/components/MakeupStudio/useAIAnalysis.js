@@ -220,7 +220,7 @@ export function useAIAnalysis({ products }) {
 
   const apiUserFacing = useMemo(() => {
     const base = (import.meta.env.VITE_API_BASE_URL || '').trim();
-    return base ? `${base}/api` : '/api';
+    return base ? `${base}/api` : https://final-project-n18z.onrender.com';
   }, []);
 
   const reset = useCallback(() => {
