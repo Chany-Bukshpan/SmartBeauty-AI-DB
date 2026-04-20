@@ -1,13 +1,14 @@
+/**
+ * Cart slice: line items keyed by product id + optional selected color.
+ */
 import { createSlice } from "@reduxjs/toolkit";
 
-// Redux slice לניהול עגלת הקניות
 const cartSlice = createSlice({
     name: "cart",
     initialState: {
         items: [] 
     },
     reducers: {
-        // הוספת מוצר לעגלה - עם כמות (אם לא מצוינת, מוסיף 1)
         addToCart: (state, action) => {
             const { product, quantity = 1, selectedColor } = action.payload;
             const productToAdd = product || action.payload;
@@ -22,7 +23,6 @@ const cartSlice = createSlice({
                 state.items.push({ ...productToAdd, qty, selectedColor: selectedColor ?? null });
             }
         },
-        // עדכון כמות מוצר בעגלה
         updateqty: (state, action) => { 
             const item = state.items.find(i => i._id === action.payload.id);
             if (item) {
@@ -32,15 +32,12 @@ const cartSlice = createSlice({
                 }
             }
         },
-        // הסרת מוצר מהעגלה
         removeItem: (state, action) => {
             state.items = state.items.filter(item => item._id !== action.payload);
         },
-        // ריקון העגלה (בהתחלף משתמש)
         clearCart: (state) => {
             state.items = [];
         },
-        // שחזור עגלה שמורה (בהתחברות עם אותו משתמש)
         setCart: (state, action) => {
             state.items = action.payload || [];
         }
@@ -49,4 +46,3 @@ const cartSlice = createSlice({
 
 export const { addToCart, updateqty, removeItem, clearCart, setCart } = cartSlice.actions;
 export default cartSlice.reducer;
-

@@ -59,14 +59,20 @@ function isLipstickPixel(h, s, l) {
 
 /**
  * מעבר על ImageData ומחליף רק פיקסלי אודם בצבע היעד (שומר את ה-lightness המקורי לצלילות).
+ * options.topFraction: אם מוגדר (למשל 0.35), רק הפיקסלים בחלק העליון של התמונה (הדיו/קצה) משתנים — למוצרי stick.
  */
-export function recolorLipstickInImageData(imageData, targetHex) {
+export function recolorLipstickInImageData(imageData, targetHex, options = {}) {
   const target = hexToRgb(targetHex);
   if (!target) return;
-  const { data } = imageData;
+  const { data, width, height } = imageData;
   const len = data.length;
+  const topFraction = options.topFraction != null ? options.topFraction : 1;
 
   for (let i = 0; i < len; i += 4) {
+    const pixelIndex = i / 4;
+    const y = Math.floor(pixelIndex / width);
+    if (topFraction < 1 && y >= height * topFraction) continue;
+
     const r = data[i], g = data[i + 1], b = data[i + 2], a = data[i + 3];
     if (a < 128) continue;
 

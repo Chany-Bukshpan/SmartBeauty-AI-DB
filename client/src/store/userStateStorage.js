@@ -1,6 +1,6 @@
 /**
- * שמירה אחת של כל מצב המשתמש (עגלה, הזמנות) – לפי מזהה משתמש.
- * כל עוד המשתמש מחובר, המצב נשמר ונשחזר כשחוזרים לחשבון.
+ * Per-user localStorage snapshot of cart and orders (keyed by user id).
+ * Used so switching accounts does not mix carts; restored on login.
  */
 const KEY_PREFIX = 'userState_'
 

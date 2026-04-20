@@ -1,6 +1,5 @@
 import './Footer.css'
 
-// קומפוננטת Footer - תוכן סטטי בתחתית הדף
 export default function Footer() {
     return (
         <footer className="footer">

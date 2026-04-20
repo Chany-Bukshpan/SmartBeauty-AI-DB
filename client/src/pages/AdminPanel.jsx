@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { fetchProducts } from '../store/slices/productsSlice';
@@ -11,6 +11,7 @@ import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { Card } from 'primereact/card';
+import { Checkbox } from 'primereact/checkbox';
 import './AdminPanel.css';
 
 // דף ניהול למנהל - עריכת מוצרים, מחיקת מוצרים, הוספת מוצרים (פגינציה כמו בדף המוצרים)
@@ -23,6 +24,8 @@ function AdminPanel() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [editDialogVisible, setEditDialogVisible] = useState(false);
   const [editForm, setEditForm] = useState({});
+  const adminTableTopRef = useRef(null);
+  const skipAdminScroll = useRef(true);
 
   // טעינת מוצרים מהשרת לפי עמוד (כמו בדף המוצרים)
   useEffect(() => {
@@ -61,16 +64,58 @@ function AdminPanel() {
       imageUrl: product.imageUrl,
       brand: product.brand || '',
       category: product.category || '',
-      inStock: product.inStock !== false
+      inStock: product.inStock !== false,
+      imageZoom: Boolean(product.imageZoom),
+      recolorTopOnly: Boolean(product.recolorTopOnly),
+      colors: Array.isArray(product.colors)
+        ? product.colors.map((c) => ({
+            name: c.name || '',
+            hex: c.hex || '',
+            imageUrl: c.imageUrl || '',
+          }))
+        : [],
     });
     setEditDialogVisible(true);
   };
 
-  // שמירת עריכת מוצר
+  const updateColorRow = (index, field, value) => {
+    const colors = [...(editForm.colors || [])];
+    colors[index] = { ...colors[index], [field]: value };
+    setEditForm({ ...editForm, colors });
+  };
+
+  const addColorRow = () => {
+    setEditForm({
+      ...editForm,
+      colors: [...(editForm.colors || []), { name: '', hex: '#E8A598', imageUrl: '' }],
+    });
+  };
+
+  const removeColorRow = (index) => {
+    const colors = [...(editForm.colors || [])];
+    colors.splice(index, 1);
+    setEditForm({ ...editForm, colors });
+  };
+
+  // שמירת עריכת מוצר — מיזוג מלא עם המוצר המקורי כדי שלא יימחקו colors / imageZoom / recolorTopOnly וכו'
   const handleSaveEdit = async () => {
     try {
-      await updateProduct(selectedProduct._id, editForm);
-      dispatch(fetchAllProducts()); // רענון הרשימה
+      const merged = JSON.parse(JSON.stringify({ ...selectedProduct, ...editForm }));
+      delete merged._id;
+      delete merged.__v;
+      delete merged.createdAt;
+      delete merged.updatedAt;
+      if (Array.isArray(merged.colors)) {
+        merged.colors = merged.colors
+          .map((c) => ({
+            name: (c.name || '').trim(),
+            hex: (c.hex || '').trim(),
+            ...(c.imageUrl && String(c.imageUrl).trim() ? { imageUrl: String(c.imageUrl).trim() } : {}),
+          }))
+          .filter((c) => c.name || c.hex);
+      }
+      await updateProduct(selectedProduct._id, merged);
+      dispatch(fetchProducts({ page, limit: 12 })); // רענון הרשימה בעמוד הנוכחי
       setEditDialogVisible(false);
       setSelectedProduct(null);
       alert('המוצר עודכן בהצלחה');
@@ -118,6 +163,7 @@ function AdminPanel() {
         <p className="section-tagline">עריכת מוצרים, הוספה ומחיקה — שליטה מלאה בחנות</p>
       </div>
       <Card title="ניהול מוצרים">
+        <div ref={adminTableTopRef} className="admin-table-anchor" tabIndex={-1} aria-hidden />
         <div className="admin-toolbar">
           <Button 
             label="הוסף מוצר חדש" 
@@ -247,6 +293,14 @@ function AdminPanel() {
                 className="admin-form-input"
               />
             </div>
+            <div className="admin-form-field admin-checkbox-row">
+              <Checkbox
+                inputId="edit-instock"
+                checked={editForm.inStock !== false}
+                onChange={(e) => setEditForm({ ...editForm, inStock: e.checked })}
+              />
+              <label htmlFor="edit-instock">במלאי</label>
+            </div>
           </section>
           <section className="admin-form-section">
             <h4 className="admin-form-section-title">תמונה</h4>
@@ -258,6 +312,62 @@ function AdminPanel() {
                 className="admin-form-input"
               />
             </div>
+            <div className="admin-form-field admin-checkbox-row">
+              <Checkbox
+                inputId="edit-imagezoom"
+                checked={Boolean(editForm.imageZoom)}
+                onChange={(e) => setEditForm({ ...editForm, imageZoom: e.checked })}
+              />
+              <label htmlFor="edit-imagezoom">זום תמונה בכרטיס (imageZoom)</label>
+            </div>
+            <div className="admin-form-field admin-checkbox-row">
+              <Checkbox
+                inputId="edit-recolor-top"
+                checked={Boolean(editForm.recolorTopOnly)}
+                onChange={(e) => setEditForm({ ...editForm, recolorTopOnly: e.checked })}
+              />
+              <label htmlFor="edit-recolor-top">צביעה רק בחלק עליון (שפתיים — recolorTopOnly)</label>
+            </div>
+          </section>
+          <section className="admin-form-section">
+            <h4 className="admin-form-section-title">גוונים (למוצרים עם צבעים)</h4>
+            <p className="admin-form-hint">ריק = ללא גוונים. ניתן להוסיף/למחוק שורות.</p>
+            {(editForm.colors || []).map((col, idx) => (
+              <div key={idx} className="admin-color-edit-row">
+                <InputText
+                  value={col.name}
+                  placeholder="שם גוון"
+                  onChange={(e) => updateColorRow(idx, 'name', e.target.value)}
+                  className="admin-form-input"
+                />
+                <InputText
+                  value={col.hex}
+                  placeholder="#RRGGBB"
+                  onChange={(e) => updateColorRow(idx, 'hex', e.target.value)}
+                  className="admin-form-input admin-color-hex"
+                />
+                <InputText
+                  value={col.imageUrl || ''}
+                  placeholder="תמונה לגוון (אופציונלי)"
+                  onChange={(e) => updateColorRow(idx, 'imageUrl', e.target.value)}
+                  className="admin-form-input"
+                />
+                <Button
+                  type="button"
+                  icon="pi pi-trash"
+                  className="p-button-rounded p-button-text p-button-danger"
+                  onClick={() => removeColorRow(idx)}
+                  aria-label="מחק גוון"
+                />
+              </div>
+            ))}
+            <Button
+              type="button"
+              label="הוסף גוון"
+              icon="pi pi-plus"
+              className="p-button-sm admin-btn-outline"
+              onClick={addColorRow}
+            />
           </section>
         </div>
       </Dialog>

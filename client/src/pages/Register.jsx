@@ -1,32 +1,100 @@
+/**
+ * Email/password registration and optional Google sign-up path.
+ */
 import { useForm } from "react-hook-form"
 import { SignUp } from "../api/userService"
 import { useDispatch } from "react-redux"
 import { userIn } from "../store/slices/userSlice"
 import { clearCart } from "../store/slices/cartSlice"
 import { clearOrders } from "../store/slices/ordersSlice"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { loginWithGooglePreferred, registerFirebaseEmail } from "../firebase/firebaseAuthService"
+import { syncFirebaseUserToApp } from "../auth/syncFirebaseUserToApp"
 import './Register.css'
 
-// דף הרשמה - טופס לרישום משתמש חדש
 export default function Register() {
-    // useForm לניהול הטופס וולידציות
     let { register, handleSubmit, formState: { errors } } = useForm()
     let dispatch = useDispatch()
     let navigate = useNavigate()
 
-    // פונקציה לשמירת משתמש חדש
     async function saveUser(data) {
         try {
-            // שליחת בקשה לשרת לרישום
             let res = await SignUp(data)
-            alert("הפרטים " + res.data.user.userName + " נשמרו בהצלחה")
+            try {
+                await registerFirebaseEmail(data.email, data.password)
+            } catch {
+            }
+            window.dispatchEvent(new CustomEvent('app:toast', {
+                detail: {
+                    severity: 'success',
+                    summary: 'הרשמה הושלמה',
+                    detail: "הפרטים " + res.data.user.userName + " נשמרו בהצלחה",
+                    life: 3000
+                }
+            }))
             dispatch(clearOrders())
             dispatch(clearCart())
             dispatch(userIn(res.data))
+            try {
+                if (res.data?.token) localStorage.setItem('token', res.data.token)
+                if (res.data?.user) localStorage.setItem('user', JSON.stringify(res.data.user))
+            } catch {}
             navigate('/')
         }
         catch (error) {
-            alert("תקלה בהרשמה: " + (error.response?.data?.message || error.message))
+            window.dispatchEvent(new CustomEvent('app:toast', {
+                detail: {
+                    severity: 'error',
+                    summary: 'הרשמה נכשלה',
+                    detail: "תקלה בהרשמה: " + (error.response?.data?.message || error.message),
+                    life: 3600
+                }
+            }))
+            console.log(error)
+        }
+    }
+
+    async function handleGoogleRegister() {
+        try {
+            const firebaseUser = await loginWithGooglePreferred()
+            if (!firebaseUser) return
+            await syncFirebaseUserToApp(firebaseUser, dispatch)
+            window.dispatchEvent(new CustomEvent('app:toast', {
+                detail: { severity: 'success', summary: 'Google התחברות', detail: 'נכנסת בהצלחה עם Google', life: 2600 }
+            }))
+            navigate('/')
+        } catch (error) {
+            const code = error?.code || error?.response?.data?.code || ""
+            if (
+                code === "auth/cancelled-popup-request" ||
+                code === "auth/popup-closed-by-user"
+            ) {
+                window.dispatchEvent(new CustomEvent('app:toast', {
+                    detail: { severity: 'info', summary: 'Google', detail: 'סגרת את חלון Google לפני השלמת הפעולה.', life: 2600 }
+                }))
+                return
+            }
+            if (code === "auth/unauthorized-domain" || code === "auth/operation-not-allowed") {
+                window.dispatchEvent(new CustomEvent('app:toast', {
+                    detail: {
+                        severity: 'warn',
+                        summary: 'Google לא זמין כרגע',
+                        detail: 'בדקי ש-Google Sign-In מופעל ב-Firebase ושהדומיין מאושר.',
+                        life: 4200
+                    }
+                }))
+                return
+            }
+            const msg = error.response?.data?.message || error.message || "שגיאה"
+            const extra = code && !String(msg).includes(code) ? ` (${code})` : ""
+            window.dispatchEvent(new CustomEvent('app:toast', {
+                detail: {
+                    severity: 'error',
+                    summary: 'Google נכשל',
+                    detail: "תקלה בהתחברות עם Google: " + msg + extra,
+                    life: 3600
+                }
+            }))
             console.log(error)
         }
     }
@@ -66,6 +134,12 @@ export default function Register() {
                 {errors.password && <span className="error">{errors.password.message}</span>}
                 
                 <input type="submit" value="הירשם" />
+                <button type="button" className="register-google-btn" onClick={handleGoogleRegister}>
+                    הרשמה / התחברות עם Google
+                </button>
+                <p className="auth-helper-line">
+                    כבר יש לך חשבון? <Link to="/login">להתחברות</Link>
+                </p>
             </form>
         </div>
     )

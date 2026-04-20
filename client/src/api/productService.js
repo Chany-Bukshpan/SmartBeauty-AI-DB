@@ -1,12 +1,13 @@
+/**
+ * HTTP helpers for /api/product — CRUD used by catalog and admin.
+ */
 import axios from "axios";
 
-// כתובת בסיסית לשרת - מוצרים
-let baseUrl = "https://final-project-n18z.onrender.com/api/product"
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || "").trim();
+let baseUrl = API_BASE ? `${API_BASE}/api/product` : "/api/product";
 
-// פונקציה לקבלת כל המוצרים מהשרת עם pagination
 export function getAllProductsFromServer(limit, page) {
     let url = baseUrl;
-    // בניית URL עם פרמטרים של pagination
     if (limit || page)
         url += "?";
     if (limit)
@@ -18,22 +19,18 @@ export function getAllProductsFromServer(limit, page) {
     return axios.get(url)
 }
 
-// פונקציה לקבלת מוצר לפי ID
 export function getProductById(id) {
     return axios.get(`${baseUrl}/${id}`)
 }
 
-// פונקציה להוספת מוצר חדש
 export function addProduct(product) {
     return axios.post(baseUrl, product)
 }
 
-// פונקציה לעדכון מוצר קיים
 export function updateProduct(id, product) {
     return axios.put(`${baseUrl}/${id}`, product)
 }
 
-// פונקציה למחיקת מוצר
 export function deleteProduct(id) {
     return axios.delete(`${baseUrl}/${id}`)
 }

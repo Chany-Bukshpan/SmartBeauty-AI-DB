@@ -1,117 +1,553 @@
+/* סרגל דביק — בהתחלה גובה בדיוק כמו גובה הלוגו, לא יותר מלמעלה או מלמטה */
 .navbar {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--primary);
-  padding: 1rem 2rem;
-  box-shadow: var(--shadow);
+  overflow: visible;
+  background: linear-gradient(
+    90deg,
+    #1a0f08 0%,
+    #2d1a0e 18%,
+    #2d1a0e 82%,
+    #1a0f08 100%
+  );
+  /* קבוע כדי שלא יקרה שינוי בזמן גלילה */
+  padding: 0.35rem 2rem;
+  border-bottom: 2px solid rgba(212, 178, 115, 0.28);
+  box-shadow:
+    0 2px 0 rgba(255, 255, 255, 0.06) inset,
+    0 4px 16px rgba(0, 0, 0, 0.25),
+    0 6px 24px rgba(0, 0, 0, 0.15);
   direction: rtl;
   display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+  min-height: 0;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.navbar-top {
+  display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  z-index: 1;
+  /* קבוע כדי שלא יקטן בזמן גלילה */
+  min-height: 78px;
+  gap: 1rem;
+  flex-direction: row-reverse;
+  /* כדי שה־navbar-left תמיד יהיה בצד שמאל וה־navbar-right תמיד בצד ימין */
+  direction: ltr;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  direction: rtl;
+  flex: 0 0 auto;
+}
+
+.navbar-left {
+  display: flex;
   align-items: center;
-  transition: box-shadow 0.35s var(--ease-out-expo), background 0.35s;
+  flex: 0 0 auto;
+  direction: rtl;
+  justify-content: flex-start;
 }
 
-.navbar--scrolled {
-  box-shadow: 0 4px 24px rgba(162, 103, 105, 0.25);
+.navbar-start {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: nowrap;
+  direction: rtl;
+  flex-direction: column;
 }
 
-.navbar--scrolled::after {
-  transform: scaleX(1);
-  opacity: 1;
+.navbar-start input[type="button"] {
+  /* לא לתת ל-margin להקפיץ את החיפוש */
+  margin-inline-start: 0;
+  margin-top: 0;
+  align-self: flex-start;
 }
 
-.navbar::after {
-  content: '';
+/* לוגו — מונמך עוד מעט למטה; z-index מעל navbar-top כדי שלא ייחסם קליק במרכז */
+.navbar-logo {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent), var(--light), var(--accent), transparent);
-  transform: scaleX(0);
-  opacity: 0;
-  transition: transform 0.4s var(--ease-out-expo), opacity 0.4s;
+  left: 50%;
+  top: 53%;
+  transform: translate(-50%, -46%);
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: #d4b273;
+  cursor: pointer;
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+.navbar-logo:hover {
+  color: #e9cf9a;
+  transform: translate(-50%, -46%) scale(1.05);
+}
+
+.navbar-logo .logo-wrap {
+  color: inherit;
+}
+
+/* גובה הלוגו נקבע ב־JS (prop height) — רק וידוא שלא יישאר ענק */
+.navbar .navbar-logo .logo-img,
+.navbar .navbar-logo img:not(.logo-loadprobe),
+.navbar .navbar-logo .logo-img--mask {
+  max-height: 128px;
+  width: auto;
+  display: block;
+  /* חייבים לאפשר קליק — אחרת הקישור לדף הבית לא עובד על התמונה */
+  pointer-events: auto;
+  object-fit: contain;
+}
+
+.navbar .navbar-logo .logo-img--mask {
+  background-color: currentColor;
+  max-width: min(280px, 48vw);
+}
+
+.navbar-logo-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* אחרי גלילה — עיצוב סופי (צל, גבול, עגלה בפינה) — הגודל כבר נקבע ע"י --scroll-progress */
+.navbar--scrolled {
+  box-shadow:
+    0 2px 0 rgba(255, 255, 255, 0.04) inset,
+    0 4px 12px rgba(0, 0, 0, 0.2);
+  border-bottom-color: rgba(212, 178, 115, 0.2);
+}
+.navbar--scrolled .navbar-top {
+  align-items: center;
+}
+.navbar--scrolled .navbar-logo:hover {
+  transform: translate(-50%, -46%) scale(1.05);
+}
+.navbar--scrolled h1 {
+  font-size: 1rem;
+}
+.navbar--scrolled .navbar-menu a {
+  font-size: 0.88rem;
+  padding: 0.4rem 0.7rem;
 }
 
 .navbar h1 {
-  color: var(--light);
+  font-family: 'Playfair Display', serif;
+  color: #d4b273;
   margin: 0;
   font-size: 1.2rem;
-  font-weight: 600;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.navbar-start h1 {
+  /* שם ארוך לא יזיז את החיפוש */
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .navbar input[type="button"] {
   background: var(--light);
   color: var(--primary);
   border: none;
-  padding: 0.5rem 1.2rem;
+  padding: 0.55rem 1.1rem;
   border-radius: var(--radius-sm);
   cursor: pointer;
   font-weight: 600;
-  margin-inline-start: 10px;
-  transition: all 0.25s var(--ease-out-expo);
+  margin-inline-start: 8px;
+  font-size: 0.9rem;
+  transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease;
 }
 
 .navbar input[type="button"]:hover {
-  background: var(--secondary);
-  color: var(--text-dark);
+  background: rgba(253, 252, 250, 0.95);
+  color: var(--primary-dark);
   transform: translateY(-1px);
 }
 
 .navbar-menu {
   display: flex;
   list-style: none;
-  gap: 1.5rem;
+  gap: 0.42rem;
   margin: 0;
   padding: 0;
   align-items: center;
+  position: relative;
+  z-index: 2;
+  margin-inline-start: 0;
+  direction: ltr;
 }
 
 .navbar-menu li {
   margin: 0;
 }
 
+/* סדר קבוע בתפריט (flex order).
+   בגלל ש־`.navbar-menu` מוגדר `direction: ltr`, ה־order קובע משמאל→ימין.
+   כדי לקבל "מהלוגו החוצה שמאלה": מוצרים → אודותינו → יצירת קשר → ההזמנות שלי,
+   אנחנו מסדרים משמאל→ימין: ההזמנות שלי → יצירת קשר → אודותינו → (ניהול) → מוצרים. */
+.nav-item--orders { order: 1; }
+.nav-item--contact { order: 2; }
+.nav-item--about { order: 3; }
+.nav-item--admin { order: 4; }
+.nav-item--products { order: 5; }
+.nav-item--login { order: 6; }
+.nav-item--register { order: 7; }
+
+.navbar-auth-icon-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navbar-auth-icon {
+  width: 1.05rem;
+  height: 1.05rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar-auth-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+/* קישורים — כיתוב זהב, בריחוף: מילוי זהב וכתב חום (הפוך) */
 .navbar-menu a {
-  color: var(--light);
+  font-family: 'Playfair Display', serif;
+  font-size: 0.95rem;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0.14em;
+  color: #d4b273;
   text-decoration: none;
-  font-weight: 500;
   position: relative;
-  padding: 0.25rem 0;
-  transition: color 0.25s ease;
+  padding: 0.42rem 0.58rem;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: color 0.25s ease, letter-spacing 0.25s ease;
+  direction: rtl;
 }
 
 .navbar-menu a::after {
-  content: '';
+  content: "";
   position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 0;
-  height: 2px;
-  background: var(--accent);
-  transition: width 0.35s var(--ease-out-expo);
+  inset-inline: 0.55rem;
+  bottom: 0.35rem;
+  height: 1px;
+  background: rgba(212, 178, 115, 0.9);
+  border-radius: 2px;
+  transform: scaleX(0);
+  transform-origin: center;
+  opacity: 0;
+  transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
 .navbar-menu a:hover {
-  color: var(--light);
+  color: #e9cf9a;
+  letter-spacing: 0.18em;
 }
 
 .navbar-menu a:hover::after {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+.navbar-menu .auth-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid rgba(212, 178, 115, 0.45);
+  border-radius: 999px;
+  padding: 0.45rem 0.82rem;
+  letter-spacing: 0.08em;
+}
+
+.navbar-menu .auth-link .auth-link-icon {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.navbar-menu .auth-link-entry {
+  background: rgba(212, 178, 115, 0.16);
+}
+
+.navbar-menu .auth-link-icon-user {
+  width: 1.05rem;
+  height: 1.05rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar-menu .auth-link-icon-user svg {
   width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+.navbar-menu .auth-link:hover {
+  background: #d4b273;
+  color: #2d1a0e;
+  border-color: #d4b273;
+}
+
+.navbar-cart-inline {
+  display: inline-flex;
+  align-items: center;
+  margin-inline-start: 0;
+}
+
+.navbar-cart-inline .compact-cart-container {
+  gap: 0.35rem !important;
+}
+
+.navbar-auth-links {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  /* משאיר את הבלוק קרוב לחלק העליון */
+  padding-top: 2px;
+}
+
+.navbar-auth-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.85rem;
+  background: transparent;
+  color: #d4b273;
+  text-decoration: none;
+  position: relative;
+  font-family: 'Playfair Display', serif;
+  font-size: 0.95rem;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  transition: color 0.25s ease, letter-spacing 0.25s ease;
+}
+
+.navbar-auth-link::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0.55rem;
+  bottom: 0.35rem;
+  height: 1px;
+  background: rgba(212, 178, 115, 0.9);
+  border-radius: 2px;
+  transform: scaleX(0);
+  transform-origin: center;
+  opacity: 0;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.navbar-auth-link:hover {
+  color: #e9cf9a;
+  letter-spacing: 0.18em;
+}
+
+.navbar-auth-link:hover::after {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+.navbar-auth-link:focus-visible {
+  outline: 2px solid rgba(233, 207, 154, 0.78);
+  outline-offset: 2px;
+}
+
+.navbar-auth-link-icon {
+  width: 1.05rem;
+  height: 1.05rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar-auth-link-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+.navbar-search-wrap {
+  position: relative;
+  min-width: 220px;
+  max-width: 290px;
+  flex: 0 0 290px;
+}
+
+.navbar-search {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  border-bottom: 1px solid rgba(212, 178, 115, 0.65);
+  background: rgba(255, 255, 255, 0.04);
+  padding-inline: 0.35rem;
+}
+
+.navbar-search input {
+  background: transparent;
+  border: none;
+  color: #e6d8c0;
+  font-size: 1.05rem;
+  font-family: 'Playfair Display', serif;
+  padding: 0.35rem 0.15rem 0.35rem 0;
+}
+
+.navbar-search input::placeholder {
+  color: rgba(230, 216, 192, 0.8);
+}
+
+.navbar-search input:focus {
+  outline: none;
+}
+
+.navbar-search button {
+  border: none;
+  background: transparent;
+  color: #d4b273;
+  cursor: pointer;
+  padding: 0.15rem 0.2rem;
+}
+
+.navbar-search-suggestions {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
   left: 0;
+  background: #fff;
+  border: 1px solid var(--rose-border);
+  border-radius: 10px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+  z-index: 55;
+}
+
+.navbar-search-suggestion {
+  width: 100%;
+  border: none;
+  background: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.65rem;
+  cursor: pointer;
+  color: var(--text-dark);
+}
+
+.navbar-search-suggestion small {
+  color: var(--text-muted);
+}
+
+.navbar-search-suggestion:hover {
+  background: rgba(212, 178, 115, 0.08);
+}
+
+@media (max-width: 1080px) {
+  .navbar-top {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    flex-direction: row-reverse;
+  }
+  .navbar-right {
+    width: 100%;
+    justify-content: center;
+  }
+  .navbar-left {
+    width: 100%;
+    justify-content: center;
+  }
+  .navbar-search-wrap {
+    min-width: min(92vw, 340px);
+    max-width: 360px;
+    flex-basis: auto;
+  }
+}
+
+.navbar-floating-cart {
+  position: fixed;
+  /* נמצא תמיד מתחת לסרגל הקבוע */
+  top: calc(78px + 0.35rem + 2px + 12px);
+  z-index: 120;
+  left: 1.25rem;
   right: auto;
+  pointer-events: auto;
 }
 
 .compact-cart-container .p-button {
-  color: var(--light) !important;
-  transition: transform 0.25s ease, background 0.25s !important;
+  color: #2d1a0e !important;
+  background: linear-gradient(165deg, #edbd6e 0%, #d4b273 52%, #9e7a3d 100%) !important;
+  border: 2px solid rgba(255, 240, 210, 0.9) !important;
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(12, 6, 3, 0.55) inset !important;
+  transition: transform 0.25s ease, background 0.25s, color 0.25s !important;
+}
+
+.compact-cart-container .p-button.p-button-rounded {
+  width: auto;
+  height: auto;
+  padding: 0.42rem 0.75rem !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm) !important;
+}
+
+.compact-cart-container .p-button.p-button-rounded {
+  min-width: 56px;
+  min-height: 56px;
+}
+
+.compact-cart-container .p-button .pi,
+.compact-cart-container .p-button [class*="pi-"] {
+  color: #2d1a0e !important;
+  font-size: 1.25rem !important;
+  transition: color 0.25s ease;
 }
 
 .compact-cart-container .p-button:hover {
-  background: rgba(236, 217, 198, 0.2) !important;
-  color: var(--light) !important;
-  transform: scale(1.08);
+  background: linear-gradient(165deg, #f5df9c 0%, #deb87a 100%) !important;
+  color: #1a0f08 !important;
+  transform: translateY(-1px);
 }
+
+.compact-cart-container .p-button:hover .pi,
+.compact-cart-container .p-button:hover [class*="pi-"] {
+  color: #1a0f08 !important;
+}
+
+.navbar-floating-cart .p-badge {
+  min-width: 1.35rem !important;
+  height: 1.35rem !important;
+  line-height: 1.35rem !important;
+  font-weight: 800 !important;
+  font-size: 0.8rem !important;
+  border: 2px solid rgba(12, 6, 3, 0.85) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* אחרי גלילה (בעת אנימציות/רקע כהה) - להבטיח שהעגלה נשארת בולטת */
+/* הקוד הזה כבר לא רלוונטי כי אין שינוי סטייט בסרגל בזמן גלילה */
 
 .cart-icon-wrapper.cart-bump {
   animation: cartBump 0.5s var(--ease-out-expo);
@@ -124,5 +560,12 @@
 }
 
 .cart-info span {
-  color: var(--light);
+  color: #fff8e7;
+  display: inline-block;
+  padding: 0.2rem 0.45rem;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(165deg, rgba(45, 26, 14, 0.95) 0%, rgba(26, 15, 8, 0.98) 100%);
+  border: 1px solid rgba(232, 194, 122, 0.55);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  font-weight: 800;
 }

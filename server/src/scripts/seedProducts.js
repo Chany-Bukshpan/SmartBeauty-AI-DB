@@ -1,10 +1,15 @@
 /**
  * סקריפט להזרעת מוצרים למסד הנתונים (MongoDB).
- * מריצים פעם אחת: node src/scripts/seedProducts.js
- * (מתוך תיקיית server)
  *
- * כדי להוסיף מוצרים: ערכי את הקובץ src/data/products.json והוסף אובייקטים
- * עם: makeupName, brand, category, description, imageUrl, price, inStock
+ * ⚠️  פעולה הרסנית: מוחקת את כל המוצרים במסד ומייבאת מחדש מ-products.json
+ *     רץ רק עם אישור מפורש — ראו למטה.
+ *
+ * הרצה (מתוך תיקיית server):
+ *   npm run seed -- --force
+ *   או:  SEED_FORCE=1 npm run seed   (Linux/Mac)
+ *   או:  set SEED_FORCE=1 && npm run seed   (Windows CMD)
+ *
+ * כדי להוסיף מוצרים ל-JSON: ערכי את src/data/products.json
  */
 
 import 'dotenv/config';
@@ -17,10 +22,29 @@ import { productModel } from '../models/product.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const dbUrl = process.env.MONGODB_URI || process.env.DB_URI;
+const dbUrl = process.env.MONGO_URI || process.env.MONGODB_URI || process.env.DB_URI;
 
 if (!dbUrl) {
   console.error('חסר MONGODB_URI או DB_URI ב-.env');
+  process.exit(1);
+}
+
+const allowDestructive =
+  process.argv.includes('--force') ||
+  process.argv.includes('-f') ||
+  String(process.env.SEED_FORCE || '').trim() === '1';
+
+if (!allowDestructive) {
+  console.error('');
+  console.error('══════════════════════════════════════════════════════════════');
+  console.error('  seed לא רץ — כדי למנוע מחיקת כל המוצרים בטעות.');
+  console.error('');
+  console.error('  • הפעלה מחדש של השרת (npm run dev / start) לא מוחקת מוצרים.');
+  console.error('  • רק סקריפט זה (עם --force) מוחק ומייבא מחדש מ-products.json.');
+  console.error('');
+  console.error('  לאיפוס מלא מכוון:  npm run seed -- --force');
+  console.error('══════════════════════════════════════════════════════════════');
+  console.error('');
   process.exit(1);
 }
 

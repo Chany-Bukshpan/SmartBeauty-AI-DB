@@ -1,6 +1,10 @@
+/**
+ * Root shell: global toast, route list, navbar/footer, floating AI makeup + chat,
+ * and effects for cart toasts, session persistence, Google redirect login, and JWT hydration.
+ */
 import { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import { Toast } from 'primereact/toast'
 import { userIn } from './store/slices/userSlice'
 import { setCart } from './store/slices/cartSlice'
@@ -8,23 +12,39 @@ import { setOrders } from './store/slices/ordersSlice'
 import { saveUserState, loadUserState } from './store/userStateStorage'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import FloatingChatWidget from './components/FloatingChatWidget'
+import MakeupStudio from './components/MakeupStudio'
 import ProtectedRoute from './components/ProtectedRoute'
 import AdminRoute from './components/AdminRoute'
 import Home from './pages/Home'
 import Products from './pages/Products'
-import { ProductList } from './pages/ProductList'
 import { AddProduct } from './pages/AddProduct'
 import { Cart } from './pages/Cart'
 import { ProductDetails } from './components/ProductDetails'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import AuthEntry from './pages/AuthEntry'
 import Orders from './pages/Orders'
+import Checkout from './pages/Checkout'
+import SupportChat from './pages/SupportChat'
+import SupportAgent from './pages/SupportAgent'
 import Users from './pages/Users'
 import AdminPanel from './pages/AdminPanel'
 import NotFound from './pages/NotFound'
+import { consumeGoogleRedirectResult } from './firebase/firebaseAuthService'
+import { syncFirebaseUserToApp } from './auth/syncFirebaseUserToApp'
+import { getJwtPayload } from './utils/jwtPayload'
 import './App.css'
 
 const PageWrap = ({ children }) => <div className="page-wrap">{children}</div>
+
+function ScrollToTopOnRouteChange() {
+  const location = useLocation()
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' })
+  }, [location.pathname])
+  return null
+}
 
 function BackToTop() {
   const [visible, setVisible] = useState(false)
@@ -46,15 +66,16 @@ function BackToTop() {
   )
 }
 
-// קומפוננטה ראשית - מגדירה את כל הנתיבים והקומפוננטות
 function App() {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const location = useLocation()
   const toastRef = useRef(null)
   const user = useSelector(state => state.user.currentUser)
   const cartItems = useSelector(state => state.cart.items)
   const orderItems = useSelector(state => state.orders.items)
 
-  // הודעת "נוסף לעגלה" כשמוסיפים מוצר
+  // PrimeReact toast when cart dispatches window "cart:added"
   useEffect(() => {
     const onCartAdded = (e) => {
       if (toastRef.current) {
@@ -71,47 +92,141 @@ function App() {
     return () => window.removeEventListener('cart:added', onCartAdded)
   }, [])
 
-  // שמירת מצב המשתמש (עגלה + הזמנות) – מפתח אחד לכל משתמש, מתעדכן כל שינוי
+  // Generic toasts from window "app:toast" (login, errors, etc.)
   useEffect(() => {
-    if (user?._id != null) {
-      saveUserState(user._id, { cart: cartItems, orders: orderItems })
+    const onToast = (e) => {
+      if (!toastRef.current) return
+      const detail = e.detail || {}
+      toastRef.current.show({
+        severity: detail.severity || 'info',
+        summary: detail.summary || 'הודעה',
+        detail: detail.detail || '',
+        life: detail.life || 2800,
+      })
     }
+    window.addEventListener('app:toast', onToast)
+    return () => window.removeEventListener('app:toast', onToast)
+  }, [])
+
+  // Persist cart + orders per user in localStorage (see userStateStorage.js)
+  useEffect(() => {
+    if (user?._id == null) return
+    try {
+      saveUserState(user._id, { cart: cartItems, orders: orderItems })
+    } catch {}
   }, [user?._id, cartItems, orderItems])
 
-  // שחזור התחברות אחרי רענון דף + שחזור המצב השמור (עגלה, הזמנות)
+  // Complete Firebase Google sign-in after redirect return
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    const userStr = localStorage.getItem('user')
-    if (token && userStr) {
+    let cancelled = false
+    ;(async () => {
       try {
-        const user = JSON.parse(userStr)
-        dispatch(userIn({ user, token }))
-        const saved = loadUserState(user._id)
-        if (saved) {
-          if (saved.cart?.length) dispatch(setCart(saved.cart))
-          if (saved.orders?.length) dispatch(setOrders(saved.orders))
-        }
-      } catch (e) {
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
+        const firebaseUser = await consumeGoogleRedirectResult()
+        if (!firebaseUser || cancelled) return
+        await syncFirebaseUserToApp(firebaseUser, dispatch)
+        window.dispatchEvent(
+          new CustomEvent('app:toast', {
+            detail: {
+              severity: 'success',
+              summary: 'Google התחברות',
+              detail: 'התחברת בהצלחה עם Google',
+              life: 2600,
+            },
+          })
+        )
+        navigate('/', { replace: true })
+      } catch (error) {
+        if (cancelled) return
+        const code = error?.code || error?.response?.data?.code || ''
+        const msg = error.response?.data?.message || error.message || 'שגיאה'
+        const extra = code && !String(msg).includes(code) ? ` (${code})` : ''
+        window.dispatchEvent(
+          new CustomEvent('app:toast', {
+            detail: {
+              severity: 'error',
+              summary: 'Google התחברות נכשלה',
+              detail: 'תקלה בהתחברות עם Google: ' + msg + extra,
+              life: 4200,
+            },
+          })
+        )
+        console.error(error)
       }
+    })()
+    return () => {
+      cancelled = true
     }
+  }, [dispatch, navigate])
+
+  // On load: restore JWT user, sync role from token payload, reload saved cart/orders
+  useEffect(() => {
+    let token, userStr, user
+    try {
+      token = localStorage.getItem('token')
+      userStr = localStorage.getItem('user')
+    } catch {
+      return
+    }
+    if (!token || !userStr) return
+    try {
+      user = JSON.parse(userStr)
+    } catch {
+      try { localStorage.removeItem('token'); localStorage.removeItem('user') } catch {}
+      return
+    }
+    const payload = getJwtPayload(token)
+    if (payload?.role && user?.role !== payload.role) {
+      user = { ...user, role: payload.role }
+      try {
+        localStorage.setItem('user', JSON.stringify(user))
+      } catch {}
+    }
+    dispatch(userIn({ user, token }))
+    try {
+      const saved = loadUserState(user._id)
+      if (saved?.cart?.length) dispatch(setCart(saved.cart))
+      if (saved?.orders?.length) dispatch(setOrders(saved.orders))
+    } catch {}
   }, [dispatch])
 
   return (
     <>
+      <ScrollToTopOnRouteChange />
       <Toast ref={toastRef} position="top-center" dir="rtl" />
       <Navbar />
-      <main className="main-content">
+      <main
+        className={
+          location.pathname === '/'
+            ? 'main-content main-content--home'
+            : 'main-content'
+        }
+      >
         <Routes>
           <Route path="/" element={<PageWrap><Home /></PageWrap>} />
           <Route path="/products" element={<PageWrap><Products /></PageWrap>} />
-          <Route path="/product-list" element={<PageWrap><ProductList /></PageWrap>} />
           <Route path="/product/:id" element={<PageWrap><ProductDetails /></PageWrap>} />
           <Route path="/cart" element={<PageWrap><Cart /></PageWrap>} />
+          <Route path="/support-chat" element={<PageWrap><SupportChat /></PageWrap>} />
+          <Route
+            path="/support-agent"
+            element={
+              <AdminRoute>
+                <PageWrap><SupportAgent /></PageWrap>
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/checkout"
+            element={
+              <ProtectedRoute>
+                <PageWrap><Checkout /></PageWrap>
+              </ProtectedRoute>
+            }
+          />
           <Route path="/add-product" element={<AdminRoute><PageWrap><AddProduct /></PageWrap></AdminRoute>} />
           <Route path="/login" element={<PageWrap><Login /></PageWrap>} />
           <Route path="/register" element={<PageWrap><Register /></PageWrap>} />
+          <Route path="/auth" element={<PageWrap><AuthEntry /></PageWrap>} />
           <Route 
             path="/orders" 
             element={
@@ -141,6 +256,8 @@ function App() {
       </main>
       <Footer />
       <BackToTop />
+      <MakeupStudio />
+      <FloatingChatWidget />
     </>
   )
 }

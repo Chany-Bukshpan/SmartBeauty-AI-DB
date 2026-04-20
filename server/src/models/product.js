@@ -15,6 +15,7 @@ const productSchema = new mongoose.Schema({
         imageUrl: { type: String }
     }],
     imageZoom: { type: Boolean, default: false },
+    recolorTopOnly: { type: Boolean, default: false },
 },
     {
         timestamps: true

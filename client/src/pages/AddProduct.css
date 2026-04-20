@@ -25,7 +25,7 @@
 .add-product-page .add-product-card {
   width: 100%;
   background: var(--light-bg) !important;
-  border: 1px solid var(--secondary) !important;
+  border: 1px solid var(--rose-border) !important;
   border-radius: var(--radius) !important;
   box-shadow: var(--shadow) !important;
   animation: slideUp 0.55s var(--ease-out-expo) both;
@@ -111,6 +111,17 @@
 
 .add-product-error {
   color: var(--primary-dark) !important;
+  font-size: 0.85rem;
+}
+
+.add-product-upload-inline {
+  margin-top: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.add-product-upload-inline input[type="file"] {
   font-size: 0.85rem;
 }
 

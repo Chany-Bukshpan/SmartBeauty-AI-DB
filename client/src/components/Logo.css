@@ -1,0 +1,22 @@
+.logo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+.logo-wrap img,
+.logo-img {
+  height: 240px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+  transition: height 0.3s ease;
+}
+.logo-placeholder {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: inherit;
+}

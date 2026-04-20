@@ -12,7 +12,11 @@ const orderSchema = new mongoose.Schema({
     deadLine: { type: Date, required: true },
     address: { type: String, required: true, trim: true, lowerCase: true },
     code: { type: String, required: true },
-    orderdProducts: { type: [minimalProductSchema], required: true },
+    orderedProducts: { type: [minimalProductSchema], required: true },
+    totalAmount: { type: Number, default: 0 },
+    paymentMethod: { type: String, default: 'test_card' },
+    paymentStatus: { type: String, enum: ['pending', 'paid_test', 'failed'], default: 'pending' },
+    paymentLast4: { type: String, default: '' },
     isShipped: { type: Boolean, default: false },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 });

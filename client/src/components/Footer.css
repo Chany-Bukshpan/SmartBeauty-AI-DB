@@ -5,7 +5,7 @@
   padding: 2rem 20px;
   margin-top: auto;
   direction: rtl;
-  box-shadow: 0 -4px 24px rgba(162, 103, 105, 0.2);
+  box-shadow: 0 -4px 24px rgba(201, 169, 110, 0.2);
   position: relative;
   z-index: 2;
 }
@@ -19,7 +19,7 @@
   width: 120px;
   height: 2px;
   background: linear-gradient(90deg, transparent, var(--accent), var(--light), var(--accent), transparent);
-  opacity: 0.8;
+  opacity: 0.9;
   border-radius: 2px;
 }
 

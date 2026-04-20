@@ -6,7 +6,7 @@
   background: var(--light-bg);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  border: 1px solid var(--secondary);
+  border: 1px solid var(--rose-border);
 }
 
 .login-enter {
@@ -39,7 +39,7 @@
 .form-login input[type="email"],
 .form-login input[type="password"] {
   padding: 0.75rem 1rem;
-  border: 1px solid var(--secondary);
+  border: 1px solid var(--rose-border);
   border-radius: var(--radius-sm);
   background: white;
   transition: border-color 0.25s, box-shadow 0.25s;
@@ -48,8 +48,8 @@
 .form-login input[type="email"]:focus,
 .form-login input[type="password"]:focus {
   outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--accent-soft);
+  border-color: var(--rose-muted);
+  box-shadow: 0 0 0 3px var(--rose-soft);
 }
 
 .form-login input[type="submit"] {
@@ -66,6 +66,113 @@
 .form-login input[type="submit"]:hover {
   background: var(--primary-dark);
   transform: translateY(-1px);
+}
+
+.auth-google-btn,
+.auth-link-btn {
+  padding: 0.7rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--rose-border);
+  background: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.auth-google-btn:hover,
+.auth-link-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.auth-google-btn {
+  background: #f8f9fb;
+}
+
+.auth-helper-line {
+  margin: 0;
+  text-align: center;
+  color: var(--text-dark);
+}
+
+.auth-helper-line a {
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.auth-helper-line a:hover {
+  text-decoration: underline;
+}
+
+.auth-helper-line--minor {
+  margin-top: -0.4rem;
+}
+
+.auth-inline-link {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.auth-inline-link:hover {
+  color: var(--primary);
+}
+
+.reset-dialog-body {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.login-reset-dialog .p-dialog-header {
+  background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%) !important;
+  color: var(--light) !important;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.login-reset-dialog .p-dialog-content {
+  background: var(--light-bg) !important;
+  color: var(--text-dark) !important;
+}
+
+.login-reset-dialog .p-dialog-footer {
+  background: var(--light-bg) !important;
+  border-top: 1px solid var(--rose-border);
+}
+
+.reset-dialog-body p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.reset-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.login-reset-dialog .reset-btn-cancel {
+  color: var(--text-muted) !important;
+}
+
+.login-reset-dialog .reset-btn-cancel:hover {
+  color: var(--primary) !important;
+}
+
+.login-reset-dialog .reset-btn-send {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+  border: none !important;
+  color: var(--light) !important;
+  font-weight: 600;
+}
+
+.login-reset-dialog .reset-btn-send:hover:not(:disabled) {
+  filter: brightness(1.08);
 }
 
 .login .error {

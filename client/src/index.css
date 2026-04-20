@@ -1,18 +1,29 @@
-/* פלטת צבעים יוקרתית + צבע הדגשה */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* פלטת צבעים — זהב הקווים (כמו בהירו) כמרכז, נגיעות ורוד עתיק */
 :root {
-  --primary: #A26769;
-  --primary-dark: #8a5658;
-  --secondary: #BFA5A0;
-  --light: #ECD9C6;
-  --light-bg: #f5efe8;
-  --text-dark: #5c4547;
-  --text-muted: #7d6b6d;
-  --accent: #c4a77d;
-  --accent-soft: rgba(196, 167, 125, 0.25);
-  --shadow: 0 2px 12px rgba(162, 103, 105, 0.12);
-  --shadow-hover: 0 6px 24px rgba(162, 103, 105, 0.18);
-  --radius: 10px;
-  --radius-sm: 6px;
+  --primary: #5c4033;
+  --primary-dark: #4a3429;
+  --secondary: #9a7b4f;
+  --light: #fdfbf7;
+  --light-bg: #f7f4ef;
+  --text-dark: #3e3229;
+  --text-muted: #6b5d52;
+  /* זהב כמו קווי ההירו — #c9a96e */
+  --accent: #c9a96e;
+  --accent-soft: rgba(201, 169, 110, 0.15);
+  /* ורוד עתיק / בלוש — נגיעות בוגרות */
+  --rose: #b07d7a;
+  --rose-muted: #c4a09a;
+  --rose-soft: rgba(176, 125, 122, 0.1);
+  --rose-border: rgba(176, 125, 122, 0.28);
+  --border: #e8e2da;
+  --shadow: 0 2px 20px rgba(92, 64, 51, 0.06);
+  --shadow-hover: 0 12px 36px rgba(201, 169, 110, 0.12);
+  --radius: 12px;
+  --radius-sm: 8px;
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 }
@@ -30,15 +41,16 @@ html {
 
 body {
   margin: 0;
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: 'Heebo', 'Segoe UI', system-ui, sans-serif;
   direction: rtl;
   text-align: right;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: var(--light);
+  background: linear-gradient(180deg, var(--light) 0%, var(--light-bg) 100%);
   color: var(--text-dark);
-  line-height: 1.6;
+  line-height: 1.65;
   position: relative;
+  font-weight: 400;
 }
 
 /* כפתורים עגולים (פלוס/מינוס) — האייקון במרכז העיגול */
@@ -92,16 +104,7 @@ input[type="submit"]:hover {
   box-shadow: var(--shadow-hover);
 }
 
-/* טקסטורת גרעין עדינה — עומק ויוקרה */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  opacity: 0.025;
-  pointer-events: none;
-  z-index: 0;
-}
+/* רקע עדין — גרדיאנט קרם */
 
 /* ========== אנימציות גלובליות ========== */
 @keyframes fadeIn {
@@ -190,13 +193,13 @@ body::before {
   100% { background-position: 0% 50%; }
 }
 
-/* טקסט גרדיאנט יוקרתי */
+/* כותרת יוקרתית — גרדיאנט עדין */
 .gradient-text {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 50%, var(--primary-dark) 100%);
-  background-size: 200% auto;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  font-weight: 700;
 }
 
 /* מעבר דפים */
@@ -226,11 +229,11 @@ body::before {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 60px;
+  width: 48px;
   height: 3px;
-  background: linear-gradient(90deg, transparent, var(--accent), var(--primary), transparent);
+  background: linear-gradient(90deg, transparent, var(--rose-muted), var(--accent), var(--rose-muted), transparent);
   border-radius: 2px;
-  animation: lineExpand 0.8s var(--ease-out-expo) 0.3s both;
+  opacity: 0.9;
 }
 
 .section-tagline {
@@ -249,10 +252,33 @@ input[type="button"] {
   --p-button-border-color: var(--primary) !important;
 }
 
+.p-button {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+  border: 1px solid var(--primary) !important;
+  color: var(--light) !important;
+}
+
+.p-button:hover:not(:disabled) {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.p-button.p-button-outlined {
+  background: transparent !important;
+  color: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
+.p-button.p-button-outlined:hover:not(:disabled) {
+  background: var(--rose-soft) !important;
+  color: var(--primary-dark) !important;
+  border-color: var(--primary-dark) !important;
+}
+
 .p-card {
   border-radius: var(--radius) !important;
   box-shadow: var(--shadow) !important;
-  border: 1px solid var(--secondary) !important;
+  border: 1px solid var(--border) !important;
 }
 
 .p-card .p-card-title {
@@ -271,8 +297,8 @@ input[type="button"] {
 
 .p-inputtext:enabled:focus,
 .p-inputnumber-input:enabled:focus {
-  box-shadow: 0 0 0 2px var(--secondary) !important;
-  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 2px var(--rose-soft) !important;
+  border-color: var(--rose-muted) !important;
 }
 
 .p-badge.p-badge-danger {

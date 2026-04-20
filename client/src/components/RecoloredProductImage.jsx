@@ -1,13 +1,12 @@
-import { useState, useRef, useEffect } from "react";
+/**
+ * Draws product photo to canvas and shifts lip/product tint toward targetHex (client-side preview).
+ */
+import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { recolorLipstickInImageData } from "../utils/recolorLipstick";
 
 const SIZE = 400;
 
-/**
- * מציג תמונת מוצר; כש-targetHex מוגדר, צובע מחדש רק את אזורי האודם (עיגול + פס) דרך Canvas.
- * הקנבס תמיד ריבוע (cover, יישור מלמעלה) כדי שלא יופיע "חצי ריבוע" אחרי הריקולור.
- */
-export function RecoloredProductImage({ src, alt, targetHex, className }) {
+export function RecoloredProductImage({ src, alt, targetHex, className, recolorTopOnly = false, drawTrigger = 0 }) {
   const [recolored, setRecolored] = useState(false);
   const [fallback, setFallback] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -22,12 +21,7 @@ export function RecoloredProductImage({ src, alt, targetHex, className }) {
     setFallback(false);
   }, [src]);
 
-  useEffect(() => {
-    setRecolored(false);
-    setFallback(false);
-  }, [targetHex]);
-
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!shouldRecolor || !imageLoaded || !imgRef.current || !canvasRef.current) return;
 
     const img = imgRef.current;
@@ -35,7 +29,6 @@ export function RecoloredProductImage({ src, alt, targetHex, className }) {
 
     const w = img.naturalWidth;
     const h = img.naturalHeight;
-    // ריבוע עם cover — התמונה ממלאת את הריבוע, יישור מלמעלה (כדי לחתוך ריק)
     const scale = Math.max(SIZE / w, SIZE / h);
     const drawW = w * scale;
     const drawH = h * scale;
@@ -45,19 +38,19 @@ export function RecoloredProductImage({ src, alt, targetHex, className }) {
     const canvas = canvasRef.current;
     canvas.width = SIZE;
     canvas.height = SIZE;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
     if (!ctx) return;
 
     try {
       ctx.drawImage(img, 0, 0, w, h, xOff, yOff, drawW, drawH);
       const imageData = ctx.getImageData(0, 0, SIZE, SIZE);
-      recolorLipstickInImageData(imageData, targetHex);
+      recolorLipstickInImageData(imageData, targetHex, recolorTopOnly ? { topFraction: 0.35 } : {});
       ctx.putImageData(imageData, 0, 0);
       setRecolored(true);
     } catch (e) {
       setFallback(true);
     }
-  }, [src, targetHex, shouldRecolor, imageLoaded]);
+  }, [src, targetHex, shouldRecolor, imageLoaded, recolorTopOnly, drawTrigger]);
 
   const showCanvas = shouldRecolor && recolored && !fallback;
 

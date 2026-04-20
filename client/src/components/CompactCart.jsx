@@ -25,7 +25,7 @@ export const CompactCart = () => {
     }, [totalItems]);
 
     return (
-        <div className="compact-cart-container" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+        <div className="compact-cart-container" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div className={`cart-icon-wrapper ${bump ? 'cart-bump' : ''}`} style={{ position: 'relative' }}>
                 <Button
                     icon="pi pi-shopping-cart" 
@@ -34,17 +34,15 @@ export const CompactCart = () => {
                     onClick={() => navigate('/cart')} 
                 />
                 {totalItems > 0 && (
-                    <Badge value={totalItems} severity="danger" style={{ position: 'absolute', top: '0', right: '0' }}></Badge>
+                    <Badge value={totalItems} severity="danger" style={{ position: 'absolute', top: '-2px', left: '-2px', right: 'auto' }}></Badge>
                 )}
             </div>
 
-            <div className="cart-info" style={{ textAlign: 'right' }}>
-                {totalItems > 0 ? (
+            {totalItems > 0 && (
+                <div className="cart-info" style={{ textAlign: 'right' }}>
                     <span style={{ fontWeight: 'bold' }}>₪{totalAmount}</span>
-                ) : (
-                    <span>העגלה ריקה</span>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 };

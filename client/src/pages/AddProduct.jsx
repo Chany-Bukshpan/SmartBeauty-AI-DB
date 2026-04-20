@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom'; 
 import { addProduct } from '../api/productService'; 
@@ -8,17 +8,21 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import { Button } from 'primereact/button'; 
 import { Card } from 'primereact/card'; 
 import { classNames } from 'primereact/utils';
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { firebaseStorage } from "../firebase/firebaseClient";
 import './AddProduct.css'; 
 
 // דף הוספת מוצר חדש - טופס להוספת מוצר למערכת
 export const AddProduct = () => {
     const navigate = useNavigate(); 
+    const [uploading, setUploading] = useState(false);
 
     const { 
         control,
         handleSubmit, 
         formState: { errors },
-        reset 
+        reset,
+        setValue
     } = useForm({
         defaultValues: {
             makeupName: '',
@@ -53,6 +57,24 @@ export const AddProduct = () => {
         } catch (error) {
             console.error("Error adding product:", error); 
             alert("אירעה שגיאה. וודאי שיש לך הרשאות מנהל."); 
+        }
+    };
+
+    const uploadImageToFirebase = async (file) => {
+        if (!file) return;
+        setUploading(true);
+        try {
+            const safeName = `${Date.now()}-${file.name}`.replace(/\s+/g, "-");
+            const storageRef = ref(firebaseStorage, `products/${safeName}`);
+            await uploadBytes(storageRef, file);
+            const downloadURL = await getDownloadURL(storageRef);
+            setValue("imageUrl", downloadURL, { shouldValidate: true, shouldDirty: true });
+            alert("התמונה הועלתה בהצלחה");
+        } catch (error) {
+            console.error("Firebase Storage upload error:", error);
+            alert("העלאת התמונה נכשלה");
+        } finally {
+            setUploading(false);
         }
     };
 
@@ -147,6 +169,14 @@ export const AddProduct = () => {
                                 )}
                             />
                             {errors.imageUrl && <small className="add-product-error">{errors.imageUrl.message}</small>}
+                            <div className="add-product-upload-inline">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => uploadImageToFirebase(e.target.files?.[0])}
+                                />
+                                {uploading && <small>מעלה תמונה ל-Firebase...</small>}
+                            </div>
                         </div>
                     </section>
                     <Button type="submit" label="הוסף מוצר" icon="pi pi-check" className="btn-add-product" />

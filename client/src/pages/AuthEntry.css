@@ -1,0 +1,68 @@
+.auth-entry-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.auth-entry-card {
+  border: 1px solid var(--rose-border);
+  border-radius: var(--radius);
+  background: var(--light-bg);
+  box-shadow: var(--shadow);
+  padding: 1.4rem;
+  text-align: center;
+}
+
+.auth-entry-icon {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 0.5rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--primary);
+  background: rgba(201, 169, 110, 0.16);
+  border: 1px solid rgba(201, 169, 110, 0.38);
+}
+
+.auth-entry-icon svg {
+  width: 30px;
+  height: 30px;
+  fill: currentColor;
+}
+
+.auth-entry-actions {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.auth-entry-btn {
+  text-decoration: none;
+  border-radius: 999px;
+  padding: 0.62rem 0.9rem;
+  font-weight: 600;
+  border: 1px solid var(--primary);
+  transition: all 0.2s ease;
+}
+
+.auth-entry-btn--login {
+  color: #fff;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+}
+
+.auth-entry-btn--register {
+  color: var(--primary);
+  background: transparent;
+}
+
+.auth-entry-btn:hover {
+  transform: translateY(-1px);
+}
+
+@media (max-width: 520px) {
+  .auth-entry-actions {
+    grid-template-columns: 1fr;
+  }
+}

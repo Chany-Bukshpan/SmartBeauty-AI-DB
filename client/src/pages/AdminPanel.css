@@ -27,7 +27,7 @@
 }
 
 .admin-panel .p-card {
-  border: 1px solid var(--secondary) !important;
+  border: 1px solid var(--rose-border) !important;
   background: var(--light-bg) !important;
   animation: slideUp 0.5s var(--ease-out-expo) both;
   border-radius: var(--radius) !important;
@@ -291,4 +291,48 @@
   border: none !important;
   font-weight: 600;
   padding: 1rem;
+}
+
+.admin-table-anchor {
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  scroll-margin-top: 5rem;
+}
+
+.admin-form-hint {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.82rem;
+  color: var(--text-muted, #666);
+}
+
+.admin-checkbox-row {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-checkbox-row label {
+  margin: 0 !important;
+  cursor: pointer;
+  font-weight: 500 !important;
+}
+
+.admin-color-edit-row {
+  display: grid;
+  grid-template-columns: 1fr 6.5rem 1fr auto;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .admin-color-edit-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-color-hex {
+  font-family: ui-monospace, monospace;
 }

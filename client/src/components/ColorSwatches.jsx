@@ -1,11 +1,9 @@
+/**
+ * Horizontal color picker for product variants (compact grid or labeled row).
+ */
 import { useRef } from 'react';
 import './ColorSwatches.css';
 
-/**
- * עיגולי צבעים למוצר — גלילה ימינה/שמאלה, לחיצה בוחרת צבע.
- * compact: ברשימת מוצרים (רק עיגולים).
- * !compact: בדף פרטי מוצר (עיגול + שם הצבע מתחת).
- */
 export function ColorSwatches({ colors, selectedIndex = 0, onSelect, compact = true }) {
   const scrollRef = useRef(null);
 

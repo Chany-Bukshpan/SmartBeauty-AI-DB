@@ -21,7 +21,7 @@
 
 .cart-page .p-card {
   background: var(--light-bg) !important;
-  border: 1px solid var(--secondary) !important;
+  border: 1px solid var(--rose-border) !important;
   animation: slideUp 0.5s var(--ease-out-expo) 0.1s both;
 }
 
@@ -46,7 +46,7 @@
 .cart-page .cart-table.p-datatable .p-datatable-tbody > tr > td {
   padding: 1rem;
   padding-inline-end: 1.25rem; /* הזזה ימינה כדי שיופיעו מתחת לקטגוריות */
-  border-color: rgba(191, 165, 160, 0.4) !important;
+  border-color: var(--rose-border) !important;
   color: var(--text-dark);
   text-align: right;
 }
@@ -60,7 +60,7 @@
   height: 56px;
   object-fit: cover;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--secondary);
+  border: 1px solid var(--rose-border);
 }
 
 .cart-item-color {
@@ -177,4 +177,75 @@
 .btn-cart-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.smart-basket {
+  margin-top: 2rem;
+  border-top: 1px solid var(--rose-border);
+  padding-top: 1rem;
+}
+
+.smart-basket h4 {
+  margin: 0;
+  color: var(--primary);
+}
+
+.smart-basket p {
+  margin: 0.35rem 0 1rem;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.smart-basket-intro {
+  max-width: 52rem;
+  line-height: 1.45;
+}
+
+.smart-basket-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 0.9rem;
+}
+
+.smart-basket-grid .smart-card.product-card.smart-card--reco {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding: 0.65rem 0.75rem 0.75rem;
+  text-align: right;
+}
+
+.smart-card-visual {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.smart-card-link-body {
+  padding: 0.35rem 0 0;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.smart-card-actions {
+  flex-shrink: 0;
+  margin-top: auto;
+  padding-top: 0.45rem;
+  border-top: 1px solid var(--border);
+}
+
+.smart-card-details-btn {
+  width: 100%;
+}
+
+.smart-name {
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.smart-meta {
+  color: var(--text-muted);
+  font-size: 0.9rem;
 }

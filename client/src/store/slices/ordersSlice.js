@@ -1,9 +1,12 @@
+/**
+ * Orders slice: authenticated user orders from /api/order.
+ */
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API_URL = 'https://final-project-n18z.onrender.com/api/order';
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || '').trim();
+const API_URL = API_BASE ? `${API_BASE}/api/order` : '/api/order';
 
-// פונקציה אסינכרונית לשליפת הזמנות המשתמש
 export const fetchUserOrders = createAsyncThunk(
   'orders/fetchUserOrders',
   async (token) => {
@@ -14,7 +17,6 @@ export const fetchUserOrders = createAsyncThunk(
   }
 );
 
-// פונקציה אסינכרונית ליצירת הזמנה חדשה
 export const createOrder = createAsyncThunk(
   'orders/createOrder',
   async ({ orderData, token }) => {
@@ -25,30 +27,25 @@ export const createOrder = createAsyncThunk(
   }
 );
 
-// יצירת slice לניהול מצב ההזמנות
 const ordersSlice = createSlice({
   name: 'orders',
   initialState: {
-    items: [],      // רשימת ההזמנות
-    loading: false, // מצב טעינה
-    error: null,    // שגיאות
+    items: [],
+    loading: false,
+    error: null,
   },
   reducers: {
-    // איפוס הזמנות (בהתחלף משתמש)
     clearOrders: (state) => {
       state.items = [];
       state.loading = false;
       state.error = null;
     },
-    // שחזור הזמנות שמורות (מצב המשתמש מהפעם הקודמת)
     setOrders: (state, action) => {
       state.items = action.payload || [];
     },
   },
-  // טיפול בתוצאות של הפעולות האסינכרוניות
   extraReducers: (builder) => {
     builder
-      // טיפול בשליפת הזמנות
       .addCase(fetchUserOrders.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -61,7 +58,6 @@ const ordersSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       })
-      // טיפול ביצירת הזמנה חדשה
       .addCase(createOrder.fulfilled, (state, action) => {
         state.items.push(action.payload);
       });

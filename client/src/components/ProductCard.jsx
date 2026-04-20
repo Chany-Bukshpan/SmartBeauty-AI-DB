@@ -1,3 +1,6 @@
+/**
+ * Compact product card (optional use): image, swatches, qty, links to detail and cart dispatch.
+ */
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from 'primereact/button';
@@ -5,14 +8,13 @@ import { useDispatch } from 'react-redux';
 import { addToCart } from '../store/slices/cartSlice';
 import { ColorSwatches } from './ColorSwatches';
 import { RecoloredProductImage } from './RecoloredProductImage';
+import { getProductImageCropKind } from '../utils/productImageBottomCrop';
 
-// קומפוננטה להצגת כרטיס מוצר - מציגה מידע בסיסי על מוצר
 export const ProductCard = ({ product }) => {
     const dispatch = useDispatch();
     const [quantity, setQuantity] = useState(0);
     const [selectedColorIndex, setSelectedColorIndex] = useState(0);
 
-    // הגדלת כמות
     const increaseQuantity = () => {
         setQuantity(prev => prev + 1);
     };
@@ -22,7 +24,6 @@ export const ProductCard = ({ product }) => {
         setQuantity(prev => (prev > 0 ? prev - 1 : 0));
     };
 
-    // הוספת מוצר לעגלה עם הכמות הנבחרת
     const handleAddToCart = () => {
         if (quantity > 0) {
             const selectedColor = product.colors?.[selectedColorIndex] ? { name: product.colors[selectedColorIndex].name, hex: product.colors[selectedColorIndex].hex } : null;
@@ -35,12 +36,19 @@ export const ProductCard = ({ product }) => {
     const displayImage = product.colors?.[selectedColorIndex]?.imageUrl || product.imageUrl;
     const selectedColorHex = product.colors?.[selectedColorIndex]?.hex;
     const useRecolor = product.colors?.length > 0 && selectedColorHex;
+    const cropKind = getProductImageCropKind(displayImage);
+    const imageWrapClass =
+        cropKind === 'four'
+            ? 'product-card-image-wrap product-card-image-wrap--crop-bottom--four'
+            : cropKind === 'tail12'
+              ? 'product-card-image-wrap product-card-image-wrap--crop-bottom'
+              : 'product-card-image-wrap';
 
     return (
         <div className="product-card">
-            <div className="product-card-image-wrap">
+            <div className={imageWrapClass}>
                 {useRecolor ? (
-                    <RecoloredProductImage src={displayImage} alt={product.makeupName || product.name} targetHex={selectedColorHex} className="product-card-recolored-img" />
+                    <RecoloredProductImage src={displayImage} alt={product.makeupName || product.name} targetHex={selectedColorHex} className="product-card-recolored-img" recolorTopOnly={product.recolorTopOnly} />
                 ) : (
                     <img src={displayImage} alt={product.makeupName || product.name} />
                 )}
