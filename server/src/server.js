@@ -74,7 +74,7 @@ const connectToDB = async () => {
     console.warn(
       "אזהרה: לא הוגדר MONGODB_URI/MONGO_URI ב־server/.env — התחברות/משתמשים לא יעבדו."
     );
-    return;
+    return false;
   }
   try {
     try {
@@ -89,6 +89,7 @@ const connectToDB = async () => {
     console.log(
       "מידע: restart של השרת לא מוחק מוצרים. איפוס מלא רק עם: npm run seed -- --force"
     );
+    return true;
   } catch (err) {
     const msg = String(err?.message || err);
     const deep =
@@ -119,9 +120,9 @@ const connectToDB = async () => {
     console.warn(
       "מצב גיבוי: מוצרים ייטענו מ־src/data/products.json; הזמנות/משתמשים דורשים MongoDB."
     );
+    return false;
   }
 };
-connectToDB();
 
 app.get("/", (req, res) => {
   res.json({
@@ -179,6 +180,22 @@ server.on("error", (err) => {
   process.exit(1);
 });
 
-server.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+(async () => {
+  let mongoOk = false;
+  if (dbUrl) {
+    mongoOk = await connectToDB();
+  }
+  // בלי חיבור פעיל, אל תשאירי פקודות Mongoose בתור (timeout 10s) — תשובה מיידית עם שגיאה
+  if (!mongoOk) {
+    mongoose.set("bufferCommands", false);
+  }
+
+  server.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+    if (dbUrl && !mongoOk) {
+      console.warn(
+        "[MongoDB] השרת רץ בלי מסד — התחברות/הזמנות לא יעבדו עד שיתוקן החיבור."
+      );
+    }
+  });
+})();

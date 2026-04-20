@@ -166,35 +166,37 @@ export const addOrder = async (req, res) => {
           `תודה,\nMakeUp Store`;
 
         const storeBody =
-          `התקבלה הזמנה חדשה (אותה תיבה כמו פניית יצירת קשר).\n\n` +
-          `קוד: ${savedOrder.code}\n` +
-          `לקוח: ${customerEmail || '(לא נמצא מייל במשתמש)'}\n` +
+          `התקבלה הזמנה חדשה באתר.\n\n` +
+          `קוד הזמנה: ${savedOrder.code}\n` +
+          `מייל המזמין (לקוח): ${customerEmail || '(לא נמצא מייל במשתמש)'}\n` +
           `סכום: ₪${savedOrder.totalAmount}\n` +
           `כתובת משלוח: ${savedOrder.address}\n\n` +
           `פריטים:\n${orderedLines}\n`;
 
-        const sameMailbox =
-          customerEmail &&
-          storeInbox &&
-          customerEmail.toLowerCase() === String(storeInbox).toLowerCase();
+        const storeInboxNorm = storeInbox ? String(storeInbox).toLowerCase().trim() : '';
+        const customerNorm = customerEmail ? customerEmail.toLowerCase().trim() : '';
+        const customerIsDifferentMailbox =
+          Boolean(customerNorm && storeInboxNorm && customerNorm !== storeInboxNorm);
 
-        if (customerEmail) {
-          const mail = {
-            from: resetFromEmail,
-            to: customerEmail,
-            subject: `אישור הזמנה - ${savedOrder.code}`,
-            text: customerBody,
-          };
-          if (storeInbox && !sameMailbox) {
-            mail.bcc = storeInbox;
-          }
-          await transporter.sendMail(mail);
-        } else if (storeInbox) {
+        // תמיד לשלוח למייל האתר/המנהל הודעת "הזמנה חדשה" עם פרטי הלקוח וההזמנה
+        // (ולא להסתמך על BCC של מייל הלקוח — כי אז באותו תיבה מגיע נוסח "הזמנתך" בלבד).
+        if (storeInbox) {
           await transporter.sendMail({
             from: resetFromEmail,
             to: storeInbox,
             subject: `הזמנה חדשה - ${savedOrder.code}`,
             text: storeBody,
+            ...(customerEmail && customerIsDifferentMailbox ? { replyTo: customerEmail } : {}),
+          });
+        }
+
+        // אישור ללקוח רק כשיש מייל לקוח ושונה ממייל קבלת ההזמנות של האתר
+        if (customerEmail && customerIsDifferentMailbox) {
+          await transporter.sendMail({
+            from: resetFromEmail,
+            to: customerEmail,
+            subject: `אישור הזמנה - ${savedOrder.code}`,
+            text: customerBody,
           });
         }
       }

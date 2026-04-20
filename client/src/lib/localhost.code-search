@@ -1,0 +1,28 @@
+# Query: localhost
+# ContextLines: 1
+
+5 results - 4 files
+
+client\.env:
+  1  # חייב להתאים ל־PORT ב־server/.env (ברירת מחדל 3000)
+  2: VITE_API_PROXY_TARGET=https://final-project-n18z.onrender.com
+  3  
+
+client\.env.example:
+  1  # חייב להתאים ל־PORT ב־server/.env — אחרת login/API יפנו לפורט הלא נכון
+  2: VITE_API_PROXY_TARGET=https://final-project-n18z.onrender.com
+  3  
+
+client\vite.config.js:
+  4  /**
+  5:  * Dev server proxies /api to the Express backend (VITE_API_PROXY_TARGET, default https://final-project-n18z.onrender.com).
+  6   */
+
+  8    const env = loadEnv(mode, process.cwd(), '')
+  9:   const target = (env.VITE_API_PROXY_TARGET || 'https://final-project-n18z.onrender.com').trim()
+  10  
+
+client\src\lib\chatSocket.js:
+  6      ? API_BASE.replace(/\/api\/?$/, '')
+  7:     : (typeof window !== 'undefined' ? window.location.origin : 'https://final-project-n18z.onrender.com');
+  8  
