@@ -112,7 +112,7 @@ export default function VirtualMakeupTryOn({
   const analyzeUrl = useMemo(() => {
     const fromEnv = import.meta.env.VITE_ANALYZE_FACE_URL;
     if (fromEnv) return fromEnv;
-    return https://final-project-n18z.onrender.com/analyze-face';
+    return 'https://final-project-n18z.onrender.com/api/analyze-face';
   }, []);
 
   const stopWebcam = () => {
