@@ -1,0 +1,14 @@
+# Blueprint ל-Render: ה-API רץ מתוך server/ (שם נמצא package.json; בשורש הריפו אין package.json)
+services:
+  - type: web
+    name: makeup-store-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health/db
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
