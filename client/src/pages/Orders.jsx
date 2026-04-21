@@ -64,9 +64,9 @@ function Orders() {
                 <h4>מוצרים:</h4>
                 {(order.orderedProducts || order.orderdProducts || []).map((product, index) => (
                   <div key={index} className="order-product">
-                    <span>{product.name}</span>
-                    <span>כמות: {product.quantity}</span>
-                    <span>₪{product.price}</span>
+                    <span className="order-product-name">{product.name}</span>
+                    <span className="order-product-qty">כמות: {product.quantity}</span>
+                    <span className="order-product-price">₪{product.price}</span>
                   </div>
                 ))}
               </div>

@@ -168,7 +168,8 @@ export default function Navbar() {
 
                         <li className="nav-item nav-item--about">
                             <Link
-                                to="/support-chat#top"
+                                to={{ pathname: "/support-chat", hash: "#top" }}
+                                state={{ scrollToId: 'top' }}
                                 onClick={() => window.scrollTo({ top: 0, left: 0, behavior: 'auto' })}
                             >
                                 אודותינו
@@ -179,7 +180,14 @@ export default function Navbar() {
                             <li className="nav-item nav-item--orders"><Link to="/orders">ההזמנות שלי</Link></li>
                         ) : null}
 
-                        <li className="nav-item nav-item--contact"><Link to="/support-chat#contact-us">יצירת קשר</Link></li>
+                        <li className="nav-item nav-item--contact">
+                            <Link
+                                to={{ pathname: "/support-chat", hash: "#contact-us" }}
+                                state={{ scrollToId: 'contact-us' }}
+                            >
+                                יצירת קשר
+                            </Link>
+                        </li>
 
                         {user && token && user?.role === 'admin' ? (
                             <li className="nav-item nav-item--admin"><Link to="/admin">ניהול מוצרים</Link></li>

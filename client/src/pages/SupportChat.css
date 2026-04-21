@@ -21,23 +21,25 @@
 .marquee-item { color:#fff; font-size:.7rem; letter-spacing:.15em; padding:10px 24px; }
 @keyframes marquee { from { transform:translateX(0);} to { transform:translateX(-40%);} }
 
-.contact-stack-track { position: relative; height: 200vh; scroll-margin-top: 90px; }
-.contact-stack-sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; }
+.contact-stack-track { position: relative; height: auto; scroll-margin-top: 90px; }
+.contact-stack-sticky { position: static; top: auto; height: auto; overflow: visible; }
 .values-base-panel {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  overflow-y: auto;
+  position: relative;
+  inset: auto;
+  z-index: auto;
+  overflow: visible;
 }
 .contact-stack-panel {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  inset: auto;
   width: 100%;
-  height: 100%;
-  transform: translateY(100%);
-  will-change: transform, opacity;
-  transition: transform 0.08s linear, opacity 0.2s ease;
-  z-index: 2;
+  height: auto;
+  min-height: auto;
+  transform: none !important;
+  opacity: 1 !important;
+  will-change: auto;
+  transition: none;
+  z-index: auto;
 }
 
 .section-label { font-size:.62rem; letter-spacing:.28em; text-transform:uppercase; color:#c9953a; margin-bottom:14px; }
@@ -79,7 +81,7 @@
 .val-card p { color:#7a6d65; line-height:1.7; font-size:.84rem; }
 
 .contact-wrap { background:#faf7f3; padding:72px 56px; display:grid; grid-template-columns:1fr 1.15fr; gap:48px; }
-.contact-stack-panel.contact-wrap { overflow-y: auto; }
+.contact-stack-panel.contact-wrap { overflow: visible; }
 .contact-wrap--image {
   position: relative;
   background-image:

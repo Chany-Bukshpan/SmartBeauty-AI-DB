@@ -42,8 +42,10 @@ const PageWrap = ({ children }) => <div className="page-wrap">{children}</div>
 function ScrollToTopOnRouteChange() {
   const location = useLocation()
   useEffect(() => {
+    // כשמנווטים עם hash (למשל #contact-us), ניתן לעמוד היעד לבצע גלילה מדויקת בעצמו.
+    if (location.hash) return
     window.scrollTo({ top: 0, behavior: 'auto' })
-  }, [location.pathname])
+  }, [location.pathname, location.hash])
   return null
 }
 
