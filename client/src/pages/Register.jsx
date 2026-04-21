@@ -10,6 +10,7 @@ import { clearOrders } from "../store/slices/ordersSlice"
 import { Link, useNavigate } from "react-router-dom"
 import { loginWithGooglePreferred, registerFirebaseEmail } from "../firebase/firebaseAuthService"
 import { syncFirebaseUserToApp } from "../auth/syncFirebaseUserToApp"
+import { toastDetailForFirebaseGoogleError } from "../auth/firebaseGoogleHelp"
 import './Register.css'
 
 export default function Register() {
@@ -19,9 +20,13 @@ export default function Register() {
 
     async function saveUser(data) {
         try {
-            let res = await SignUp(data)
+            const payload = {
+                ...data,
+                email: data?.email != null ? String(data.email).trim().toLowerCase() : data?.email,
+            }
+            let res = await SignUp(payload)
             try {
-                await registerFirebaseEmail(data.email, data.password)
+                await registerFirebaseEmail(payload.email, data.password)
             } catch {
             }
             window.dispatchEvent(new CustomEvent('app:toast', {
@@ -75,13 +80,19 @@ export default function Register() {
                 return
             }
             if (code === "auth/unauthorized-domain" || code === "auth/operation-not-allowed") {
+                const detail =
+                    toastDetailForFirebaseGoogleError(code) ||
+                    "בדקי ש-Google Sign-In מופעל ב-Firebase ושהדומיין מאושר."
                 window.dispatchEvent(new CustomEvent('app:toast', {
                     detail: {
                         severity: 'warn',
-                        summary: 'Google לא זמין כרגע',
-                        detail: 'בדקי ש-Google Sign-In מופעל ב-Firebase ושהדומיין מאושר.',
-                        life: 4200
-                    }
+                        summary:
+                            code === "auth/unauthorized-domain"
+                                ? 'דומיין לא מאושר ב-Firebase'
+                                : 'Google לא מופעל ב-Firebase',
+                        detail,
+                        life: 8000,
+                    },
                 }))
                 return
             }

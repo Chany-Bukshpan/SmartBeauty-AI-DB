@@ -12,6 +12,7 @@ import { loadUserState } from "../store/userStateStorage"
 import { Link, useNavigate } from "react-router-dom"
 import { loginWithGooglePreferred } from "../firebase/firebaseAuthService"
 import { syncFirebaseUserToApp } from "../auth/syncFirebaseUserToApp"
+import { toastDetailForFirebaseGoogleError } from "../auth/firebaseGoogleHelp"
 import { Dialog } from "primereact/dialog"
 import { InputText } from "primereact/inputtext"
 import { Button } from "primereact/button"
@@ -33,7 +34,11 @@ export default function Login() {
 
     async function handleLogin(data) {
         try {
-            let res = await LoginAPI(data)
+            const payload = {
+                ...data,
+                email: data?.email != null ? String(data.email).trim().toLowerCase() : data?.email,
+            }
+            let res = await LoginAPI(payload)
             window.dispatchEvent(new CustomEvent('app:toast', {
                 detail: { severity: 'success', summary: 'ברוכה הבאה', detail: 'התחברת בהצלחה', life: 2600 }
             }))
@@ -87,13 +92,19 @@ export default function Login() {
                 return
             }
             if (code === "auth/unauthorized-domain" || code === "auth/operation-not-allowed") {
+                const detail =
+                    toastDetailForFirebaseGoogleError(code) ||
+                    "בדקי ש-Google Sign-In מופעל ב-Firebase ושהדומיין מאושר."
                 window.dispatchEvent(new CustomEvent('app:toast', {
                     detail: {
                         severity: 'warn',
-                        summary: 'Google לא זמין כרגע',
-                        detail: 'בדקי ש-Google Sign-In מופעל ב-Firebase ושהדומיין הזה מאושר.',
-                        life: 4200
-                    }
+                        summary:
+                            code === "auth/unauthorized-domain"
+                                ? 'דומיין לא מאושר ב-Firebase'
+                                : 'Google לא מופעל ב-Firebase',
+                        detail,
+                        life: 8000,
+                    },
                 }))
                 return
             }

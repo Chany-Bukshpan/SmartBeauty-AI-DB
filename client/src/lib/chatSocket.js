@@ -19,7 +19,8 @@ function resolveSocketOrigin() {
   return fromProxy || 'https://final-project-n18z.onrender.com';
 }
 
-const SOCKET_URL = resolveSocketOrigin();
+const SOCKET_URL = 'https://final-project-n18z.onrender.com';
+
 
 export const chatSocket = io(SOCKET_URL, {
   autoConnect: true,

@@ -18,8 +18,17 @@ export const loginUser = async (req, res) => {
                 message: "email/username and password required" 
             });
         }
-        // 2. Identification: Find user by email or username
-        const user = await userModel.findOne({ $or: [{ email }, { userName }] });
+        const emailNorm = email != null && String(email).trim() !== ""
+            ? String(email).toLowerCase().trim()
+            : null;
+        const userNameTrim = userName != null && String(userName).trim() !== ""
+            ? String(userName).trim()
+            : null;
+        // 2. Identification: Find user by email or username (מייל תמיד lowercase כמו במסד)
+        const or = [];
+        if (emailNorm) or.push({ email: emailNorm });
+        if (userNameTrim) or.push({ userName: userNameTrim });
+        const user = or.length ? await userModel.findOne({ $or: or }) : null;
         if (!user)
             return res.status(401).json({ 
                 title: "Authentication failed", 

@@ -9,6 +9,8 @@ import { BrowserRouter } from 'react-router-dom'
 import { store } from './store/store.js'
 import './index.css'
 import App from './App.jsx'
+import axios from 'axios';
+axios.defaults.baseURL = 'https://onrender.com';
 
 import "primereact/resources/themes/lara-light-indigo/theme.css";  
 import "primereact/resources/primereact.min.css";                 

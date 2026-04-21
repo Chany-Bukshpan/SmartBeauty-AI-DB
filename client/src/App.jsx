@@ -33,6 +33,7 @@ import AdminPanel from './pages/AdminPanel'
 import NotFound from './pages/NotFound'
 import { consumeGoogleRedirectResult } from './firebase/firebaseAuthService'
 import { syncFirebaseUserToApp } from './auth/syncFirebaseUserToApp'
+import { toastDetailForFirebaseGoogleError } from './auth/firebaseGoogleHelp'
 import { getJwtPayload } from './utils/jwtPayload'
 import './App.css'
 
@@ -138,6 +139,25 @@ function App() {
       } catch (error) {
         if (cancelled) return
         const code = error?.code || error?.response?.data?.code || ''
+        if (code === 'auth/unauthorized-domain' || code === 'auth/operation-not-allowed') {
+          const detail =
+            toastDetailForFirebaseGoogleError(code) ||
+            'בדקי Firebase Authentication (דומיין מאושר + Google מופעל).'
+          window.dispatchEvent(
+            new CustomEvent('app:toast', {
+              detail: {
+                severity: 'warn',
+                summary:
+                  code === 'auth/unauthorized-domain'
+                    ? 'דומיין לא מאושר ב-Firebase'
+                    : 'Google לא מופעל ב-Firebase',
+                detail,
+                life: 8000,
+              },
+            })
+          )
+          return
+        }
         const msg = error.response?.data?.message || error.message || 'שגיאה'
         const extra = code && !String(msg).includes(code) ? ` (${code})` : ''
         window.dispatchEvent(
