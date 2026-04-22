@@ -26,4 +26,3 @@
 * **Generic Components:** High emphasis on reusability through a library of generic widgets and shared functions, adhering to **Clean Code** principles.
 * **State Management:** Efficient global state synchronization using **React Context API**.
 * **Asynchronous Operations:** Robust handling of API requests and AI processing using **Async/Await** patterns.
-" (איך להריץ את הפרויקט) למקרה שמגייס ירצה לבדוק אותו בעצמו?**
