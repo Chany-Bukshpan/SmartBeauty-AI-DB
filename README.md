@@ -11,7 +11,8 @@
 * **Complete E-Commerce Lifecycle:** Full implementation of product catalog, shopping cart management, and secure user authentication.
 * **RESTful API Backend:** A robust server-side architecture handling complex data flows, user security, and AI integrations.
 * **Responsive Design:** A fully adaptive user interface built with **Tailwind CSS** to ensure an optimal experience across all device types.
-
+* **Secure User Management:** Full authentication system including registration, login, and secure password reset functionality.
+  
 ## Tech Stack
 * **Frontend:** React.js, Context API, React Hooks, Axios, Tailwind CSS.
 * **Backend:** Node.js, Express.js.
